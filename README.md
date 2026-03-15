@@ -7,7 +7,7 @@ Minhas configurações de ambiente, automatizadas para Linux (Ubuntu/Debian e Fe
 Para configurar seu ambiente do zero, basta rodar o script de instalação na raiz do repositório:
 
 ```bash
-git clone https://github.com/carlosedsousa/dotfiles.git ~/dotfiles
+git clone https://github.com/carlosedsousa-dev/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 chmod +x install.sh
 ./install.sh
@@ -34,5 +34,3 @@ dotup
 * `zsh/`: Configurações do Zsh (`.zshrc`, plugins).
 * `install.sh`: Script de instalação automática.
 * `update.sh`: Script de atualização.
-
----
