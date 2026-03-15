@@ -31,7 +31,10 @@ done
 
 if [ ${#MISSING_PACKAGES[@]} -gt 0 ]; then
     echo "Instalando pacotes ausentes: ${MISSING_PACKAGES[*]}"
-    if command -v apt-get &> /dev/null; then
+    # Suporte a Termux, APT e DNF
+    if command -v pkg &> /dev/null; then
+        pkg update && pkg install -y "${MISSING_PACKAGES[@]}"
+    elif command -v apt-get &> /dev/null; then
         sudo apt-get update -y && sudo apt-get install -y "${MISSING_PACKAGES[@]}"
     elif command -v dnf &> /dev/null; then
         sudo dnf install -y "${MISSING_PACKAGES[@]}"
@@ -59,10 +62,15 @@ done
 # Checagem do shell padrão e alteração para zsh caso necessário
 CURRENT_SHELL=$(basename "$SHELL")
 if [ "$CURRENT_SHELL" != "zsh" ]; then
-    echo "Alterando shell para ZSH..."
-    ZSH_PATH=$(which zsh)
-    sudo chsh -s "$ZSH_PATH" "$USER"
-    echo "Shell alterado. Por favor, faça LOG OUT e LOG IN."
+    if [ -n "$TERMUX_VERSION" ]; then
+        echo "Configurando ZSH no Termux..."
+        echo "chsh -s zsh"
+        chsh -s zsh
+    else
+        echo "Alterando shell padrão..."
+        sudo chsh -s "$(which zsh)" "$USER"
+    fi
+    echo "Por favor, reinicie o terminal."
 fi
 
 echo "Configuração concluída!"
