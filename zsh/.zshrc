@@ -17,5 +17,9 @@ antidote load
 bindkey '^[[A' history-substring-search-up
 bindkey '^[[B' history-substring-search-down
 
+# Mapear Ctrl + Seta para Esquerda e para Direita
+bindkey "^[[1;5D" backward-word
+bindkey "^[[1;5C" forward-word
+
 # Aliases
 alias dotup="cd ~/dotfiles && git pull && ./install.sh && source ~/.zshrc"
