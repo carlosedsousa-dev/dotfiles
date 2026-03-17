@@ -20,5 +20,5 @@ source ${ZDOTDIR:-$HOME}/.antidote/antidote.zsh
 antidote load
 
 # Carregar arquivos extras
-[[ -f ~/.bindkeys ]] && source ~/.bindkeys
-[[ -f ~/.aliases ]] && source ~/.aliases
+[[ -f ~/.bindkeys.zsh ]] && source ~/.bindkeys.zsh
+[[ -f ~/.aliases.zsh ]] && source ~/.aliases.zsh
