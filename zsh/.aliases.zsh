@@ -21,7 +21,7 @@ alias gchb='git checkout -b'
 
 # Logs e Diff
 alias gd='git diff'
-alias gloga="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+alias glog="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
 
 # Gestão de Dotfiles
 alias dot='cd ~/dotfiles'
