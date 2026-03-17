@@ -41,6 +41,6 @@ dotup
 ## 📂 Estrutura
 
 * `zsh/`: Configurações do Zsh (`.zshrc`, plugins).
-    * [.aliases.zsh](./zsh/.aliases.zsh): Todos os meus atalhos e funções.
+    * `.aliases.zsh`: Todos os meus atalhos e funções.
 * `install.sh`: Script de instalação automática (inclui setup do Mise).
 * `update.sh`: Script de atualização.
