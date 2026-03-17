@@ -7,12 +7,17 @@ ANTIDOTE_DIR="${ZDOTDIR:-$HOME}/.antidote"
 PACKAGES=(
     zsh
     stow
+    curl
+    git
 )
 
 # Lista de arquivos/pastas para limpar antes do stow
 CLEANUP_LIST=(
-    "$HOME/.zshrc"
     "$HOME/.config/antidote"
+    "$HOME/.zshrc"
+    "$HOME/.zsh_plugins.txt"
+    "$HOME/.aliases"
+    "$HOME/.bindkeys"
 )
 
 # Lista de módulos do stow
@@ -20,7 +25,7 @@ STOW_MODULES=(
     zsh
 )
 
-echo "Verificando dependências..."
+echo "Verificando dependências do sistema..."
 
 MISSING_PACKAGES=()
 for pkg in "${PACKAGES[@]}"; do
@@ -31,7 +36,6 @@ done
 
 if [ ${#MISSING_PACKAGES[@]} -gt 0 ]; then
     echo "Instalando pacotes ausentes: ${MISSING_PACKAGES[*]}"
-    # Suporte a Termux, APT e DNF
     if command -v pkg &> /dev/null; then
         pkg update && pkg install -y "${MISSING_PACKAGES[@]}"
     elif command -v apt-get &> /dev/null; then
@@ -40,9 +44,20 @@ if [ ${#MISSING_PACKAGES[@]} -gt 0 ]; then
         sudo dnf install -y "${MISSING_PACKAGES[@]}"
     fi
 else
-    echo "Todas as dependências já estão instaladas."
+    echo "Todas as dependências do sistema já estão instaladas."
 fi
 
+# Instalação do Mise-en-place
+if ! command -v mise &> /dev/null; then
+    echo "Mise não encontrado. Instalando via mise.run..."
+    curl https://mise.run | sh
+    # Adiciona o caminho do mise temporariamente para o script
+    export PATH="$HOME/.local/share/mise/bin:$PATH"
+else
+    echo "Mise já está instalado."
+fi
+
+# Configuração do Antidote
 if [ ! -d "$ANTIDOTE_DIR" ]; then
     echo "Clonando Antidote..."
     git clone --depth=1 https://github.com/mattmc3/antidote.git "$ANTIDOTE_DIR"
@@ -54,23 +69,21 @@ for item in "${CLEANUP_LIST[@]}"; do
 done
 
 echo "Aplicando módulos do Stow..."
-cd "$DOTFILES_DIR"
+cd "$DOTFILES_DIR" || exit
 for module in "${STOW_MODULES[@]}"; do
     stow "$module"
 done
 
-# Checagem do shell padrão e alteração para zsh caso necessário
+# Troca de Shell
 CURRENT_SHELL=$(basename "$SHELL")
 if [ "$CURRENT_SHELL" != "zsh" ]; then
+    echo "Alterando shell padrão para ZSH..."
     if [ -n "$TERMUX_VERSION" ]; then
-        echo "Configurando ZSH no Termux..."
-        echo "chsh -s zsh"
         chsh -s zsh
     else
-        echo "Alterando shell padrão..."
         sudo chsh -s "$(which zsh)" "$USER"
     fi
-    echo "Por favor, reinicie o terminal."
+    echo "Shell alterado. Por favor, reinicie o terminal após o término."
 fi
 
-echo "Configuração concluída!"
+echo "Configuração concluída com sucesso!"

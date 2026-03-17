@@ -1,0 +1,14 @@
+# Meus Aliases Personalizados
+# Localização original: ~/dotfiles/zsh/.aliases
+
+# Alias de atualização dotfiles
+alias dotup="cd ~/dotfiles && git pull && ./install.sh && source ~/.zshrc"
+
+# Aliases para o Git
+alias gst='git status'
+alias ga='git add'
+alias gaa='git add --all'
+alias gc='git commit -m'
+alias gp='git push'
+alias gl='git pull'
+alias gl='git log --oneline --graph --all'
