@@ -23,6 +23,7 @@ CLEANUP_LIST=(
 # Lista de módulos do stow
 STOW_MODULES=(
     zsh
+    mise
 )
 
 echo "Verificando dependências do sistema..."
