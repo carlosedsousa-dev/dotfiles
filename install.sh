@@ -23,7 +23,6 @@ CLEANUP_LIST=(
 # Lista de módulos do stow
 STOW_MODULES=(
     zsh
-    mise
 )
 
 echo "Verificando dependências do sistema..."
@@ -46,16 +45,6 @@ if [ ${#MISSING_PACKAGES[@]} -gt 0 ]; then
     fi
 else
     echo "Todas as dependências do sistema já estão instaladas."
-fi
-
-# Instalação do Mise-en-place
-if ! command -v mise &> /dev/null; then
-    echo "Mise não encontrado. Instalando via mise.run..."
-    curl https://mise.run | sh
-    # Adiciona o caminho do mise temporariamente para o script
-    export PATH="$HOME/.local/share/mise/bin:$PATH"
-else
-    echo "Mise já está instalado."
 fi
 
 # Configuração do Antidote
