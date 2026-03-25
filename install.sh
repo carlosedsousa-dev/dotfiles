@@ -2,89 +2,82 @@
 
 DOTFILES_DIR="$HOME/dotfiles"
 ANTIDOTE_DIR="${ZDOTDIR:-$HOME}/.antidote"
+ZSH_COMPLETIONS_DIR="$HOME/.zsh/completions"
 
-# Lista de dependências para o sistema
-PACKAGES=(
-    zsh
-    stow
-    curl
-    git
-)
+# Pacotes comuns a todos os sistemas
+COMMON_PACKAGES=(zsh stow curl git openssl ca-certificates)
 
-# Lista de arquivos/pastas para limpar antes do stow
-CLEANUP_LIST=(
-    "$HOME/.config/antidote"
-    "$HOME/.zshrc"
-    "$HOME/.zsh_plugins.txt"
-    "$HOME/.aliases"
-    "$HOME/.bindkeys"
-)
+# Pacotes específicos por gestor
+APT_SPECIFIC=(libssl-dev)
+DNF_SPECIFIC=(openssl-devel)
+PKG_SPECIFIC=() # O Termux já inclui o necessário nos pacotes base
 
-# Lista de módulos do stow
-STOW_MODULES=(
-    zsh
-    mise
-)
+echo "Detectando sistema..."
 
-echo "Verificando dependências do sistema..."
-
-MISSING_PACKAGES=()
-for pkg in "${PACKAGES[@]}"; do
-    if ! command -v "$pkg" &> /dev/null; then
-        MISSING_PACKAGES+=("$pkg")
-    fi
-done
-
-if [ ${#MISSING_PACKAGES[@]} -gt 0 ]; then
-    echo "Instalando pacotes ausentes: ${MISSING_PACKAGES[*]}"
-    if command -v pkg &> /dev/null; then
-        pkg update && pkg install -y "${MISSING_PACKAGES[@]}"
-    elif command -v apt-get &> /dev/null; then
-        sudo apt-get update -y && sudo apt-get install -y "${MISSING_PACKAGES[@]}"
-    elif command -v dnf &> /dev/null; then
-        sudo dnf install -y "${MISSING_PACKAGES[@]}"
-    fi
-else
-    echo "Todas as dependências do sistema já estão instaladas."
+if [ -n "$TERMUX_VERSION" ] || command -v pkg &> /dev/null; then
+    PM="pkg"
+    FINAL_PACKAGES=("${COMMON_PACKAGES[@]}" "${PKG_SPECIFIC[@]}")
+elif command -v apt-get &> /dev/null; then
+    PM="apt"
+    FINAL_PACKAGES=("${COMMON_PACKAGES[@]}" "${APT_SPECIFIC[@]}")
+elif command -v dnf &> /dev/null; then
+    PM="dnf"
+    FINAL_PACKAGES=("${COMMON_PACKAGES[@]}" "${DNF_SPECIFIC[@]}")
 fi
 
-# Instalação do Mise-en-place
+echo "Instalando via $PM..."
+
+if [ "$PM" == "pkg" ]; then
+    pkg update && pkg install -y "${FINAL_PACKAGES[@]}"
+elif [ "$PM" == "apt" ]; then
+    sudo apt-get update -y && sudo apt-get install -y "${FINAL_PACKAGES[@]}"
+    sudo update-ca-certificates
+elif [ "$PM" == "dnf" ]; then
+    sudo dnf install -y "${FINAL_PACKAGES[@]}"
+    sudo update-ca-trust
+fi
+
+# Instalação do Mise
 if ! command -v mise &> /dev/null; then
-    echo "Mise não encontrado. Instalando via mise.run..."
+    echo "Instalando Mise..."
     curl https://mise.run | sh
-    # Adiciona o caminho do mise temporariamente para o script
-    export PATH="$HOME/.local/share/mise/bin:$PATH"
-else
-    echo "Mise já está instalado."
+    export PATH="$HOME/.local/share/mise/bin:$HOME/.local/bin:$PATH"
 fi
 
-# Configuração do Antidote
+# Autocomplete
+mkdir -p "$ZSH_COMPLETIONS_DIR"
+mise completion zsh > "$ZSH_COMPLETIONS_DIR/_mise"
+
+# Instalação de Ferramentas
+echo "Instalando ferramentas globais..."
+# No Termux, se o Sigstore ainda falhar devido ao Kernel, 
+# o script tentará instalar normalmente.
+if ! mise install -y; then
+    echo "Erro de verificação detetado. Tentando self-update..."
+    mise self-update
+    mise install -y
+fi
+
+# Antidote e Dotfiles
 if [ ! -d "$ANTIDOTE_DIR" ]; then
-    echo "Clonando Antidote..."
     git clone --depth=1 https://github.com/mattmc3/antidote.git "$ANTIDOTE_DIR"
 fi
 
-echo "Limpando arquivos antigos para evitar conflitos..."
-for item in "${CLEANUP_LIST[@]}"; do
-    rm -rf "$item"
-done
+echo "Limpando conflitos e aplicando Stow..."
+CLEANUP=(.config/antidote .zshrc .zsh_plugins.txt .aliases .bindkeys)
+for item in "${CLEANUP[@]}"; do rm -rf "$HOME/$item"; done
 
-echo "Aplicando módulos do Stow..."
 cd "$DOTFILES_DIR" || exit
-for module in "${STOW_MODULES[@]}"; do
-    stow "$module"
-done
+stow zsh
+stow mise
 
 # Troca de Shell
-CURRENT_SHELL=$(basename "$SHELL")
-if [ "$CURRENT_SHELL" != "zsh" ]; then
-    echo "Alterando shell padrão para ZSH..."
-    if [ -n "$TERMUX_VERSION" ]; then
+if [ "$(basename "$SHELL")" != "zsh" ]; then
+    if [ "$PM" == "pkg" ]; then
         chsh -s zsh
     else
         sudo chsh -s "$(which zsh)" "$USER"
     fi
-    echo "Shell alterado. Por favor, reinicie o terminal após o término."
 fi
 
-echo "Configuração concluída com sucesso!"
+echo "Setup concluído!"
