@@ -27,3 +27,6 @@ alias glog="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset
 alias dot='cd ~/dotfiles'
 alias edot='$EDITOR ~/dotfiles/zsh/.zshrc'
 alias szsh='source ~/.zshrc'
+
+# Substitudo do ls moderno
+alias ls="eza"
