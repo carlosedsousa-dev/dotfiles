@@ -4,25 +4,53 @@ DOTFILES_DIR="$HOME/dotfiles"
 ANTIDOTE_DIR="${ZDOTDIR:-$HOME}/.antidote"
 ZSH_COMPLETIONS_DIR="$HOME/.zsh/completions"
 
-# Pacotes comuns a todos os sistemas
-COMMON_PACKAGES=(zsh stow curl git openssl ca-certificates)
+# Configuração de Listas (Modularidade)
+# Pacotes universais
+PACKAGES=(
+    zsh
+    stow
+    curl
+    git
+    openssl
+    ca-certificates
+)
 
-# Pacotes específicos por gestor
-APT_SPECIFIC=(libssl-dev)
-DNF_SPECIFIC=(openssl-devel)
-PKG_SPECIFIC=() # O Termux já inclui o necessário nos pacotes base
+# Pacotes específico do APT
+APT_SPECIFIC=(
+    libssl-dev
+)
+
+# Pacotes específico do DNF
+DNF_SPECIFIC=(
+    openssl-devel
+)
+
+# Lista de módulos do Stow para aplicar
+STOW_MODULES=(
+    zsh
+    mise
+)
+
+# Lista de arquivos para limpar antes do Stow
+CLEANUP_LIST=(
+    .config/antidote 
+    .zshrc 
+    .zsh_plugins.txt 
+    .aliases 
+    .bindkeys
+)
 
 echo "Detectando sistema..."
 
 if [ -n "$TERMUX_VERSION" ] || command -v pkg &> /dev/null; then
     PM="pkg"
-    FINAL_PACKAGES=("${COMMON_PACKAGES[@]}" "${PKG_SPECIFIC[@]}")
+    FINAL_PACKAGES=("${PACKAGES[@]}")
 elif command -v apt-get &> /dev/null; then
     PM="apt"
-    FINAL_PACKAGES=("${COMMON_PACKAGES[@]}" "${APT_SPECIFIC[@]}")
+    FINAL_PACKAGES=("${PACKAGES[@]}" "${APT_SPECIFIC[@]}")
 elif command -v dnf &> /dev/null; then
     PM="dnf"
-    FINAL_PACKAGES=("${COMMON_PACKAGES[@]}" "${DNF_SPECIFIC[@]}")
+    FINAL_PACKAGES=("${PACKAGES[@]}" "${DNF_SPECIFIC[@]}")
 fi
 
 echo "Instalando via $PM..."
@@ -46,30 +74,31 @@ fi
 
 # Autocomplete
 mkdir -p "$ZSH_COMPLETIONS_DIR"
-mise completion zsh > "$ZSH_COMPLETIONS_DIR/_mise"
-
-# Instalação de Ferramentas
-echo "Instalando ferramentas globais..."
-# No Termux, se o Sigstore ainda falhar devido ao Kernel, 
-# o script tentará instalar normalmente.
-if ! mise install -y; then
-    echo "Erro de verificação detetado. Tentando self-update..."
-    mise self-update
-    mise install -y
+if command -v mise &> /dev/null; then
+    mise completion zsh > "$ZSH_COMPLETIONS_DIR/_mise"
 fi
-
-# Antidote e Dotfiles
+# Antidote
 if [ ! -d "$ANTIDOTE_DIR" ]; then
     git clone --depth=1 https://github.com/mattmc3/antidote.git "$ANTIDOTE_DIR"
 fi
 
-echo "Limpando conflitos e aplicando Stow..."
-CLEANUP=(.config/antidote .zshrc .zsh_plugins.txt .aliases .bindkeys)
-for item in "${CLEANUP[@]}"; do rm -rf "$HOME/$item"; done
+echo "Limpando conflitos..."
+for item in "${CLEANUP_LIST[@]}"; do 
+    rm -rf "$HOME/$item"
+done
 
+echo "Aplicando módulos do Stow..."
 cd "$DOTFILES_DIR" || exit
-stow zsh
-stow mise
+for module in "${STOW_MODULES[@]}"; do 
+    stow "$module"
+done
+
+# Instalação de Ferramentas
+echo "Instalando ferramentas globais..."
+if ! mise install -y; then
+    echo "Erro de verificação detetado. Tentando self-update..."
+    mise self-update && mise install -y
+fi
 
 # Troca de Shell
 if [ "$(basename "$SHELL")" != "zsh" ]; then
@@ -80,4 +109,4 @@ if [ "$(basename "$SHELL")" != "zsh" ]; then
     fi
 fi
 
-echo "Setup concluído!"
+echo "Setup concluído com sucesso!"
