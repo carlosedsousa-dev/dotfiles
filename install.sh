@@ -13,6 +13,7 @@ PACKAGES=(
     git
     openssl
     ca-certificates
+    eza
 )
 
 # Pacotes específico do APT
