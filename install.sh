@@ -11,8 +11,12 @@ PACKAGES=(
     stow
     curl
     git
+
+    # Adição de compatibilidades com tipos de chaves SSH usadas pelo Mise
     openssl
     ca-certificates
+
+    # Substitudo moderno para o ls
     eza
 )
 
@@ -34,10 +38,10 @@ STOW_MODULES=(
 
 # Lista de arquivos para limpar antes do Stow
 CLEANUP_LIST=(
-    .config/antidote 
-    .zshrc 
-    .zsh_plugins.txt 
-    .aliases 
+    .config/antidote
+    .zshrc
+    .zsh_plugins.txt
+    .aliases
     .bindkeys
 )
 
@@ -78,6 +82,7 @@ mkdir -p "$ZSH_COMPLETIONS_DIR"
 if command -v mise &> /dev/null; then
     mise completion zsh > "$ZSH_COMPLETIONS_DIR/_mise"
 fi
+
 # Antidote
 if [ ! -d "$ANTIDOTE_DIR" ]; then
     git clone --depth=1 https://github.com/mattmc3/antidote.git "$ANTIDOTE_DIR"
