@@ -22,4 +22,5 @@ fi
 [[ -n "${terminfo[kRIT5]}" ]] && bindkey "${terminfo[kRIT5]}" forward-word
 
 # Ctrl + Delete
-[[ -n "${terminfo[kDC5]}"  ]] && bindkey "${terminfo[kDC5]}"  backward-kill-word
+bindkey '^H' backward-kill-word
+
