@@ -96,6 +96,19 @@ window-rule {
     clip-to-geometry true
 }
 
+// Regras para janelas flutuantes (Apps que não devem ocupar a tela toda)
+window-rule {
+    match app-id="pavucontrol"
+    open-floating true
+    default-column-width { proportion 0.4; }
+    default-window-height { proportion 0.4; }
+}
+
+window-rule {
+    match title="Bitwarden — Brave"
+    open-floating true
+}
+
 // Atalhos de teclado
 binds {
     // Ajuda: mostra a lista de atalhos na tela
@@ -106,6 +119,7 @@ binds {
     Mod+D { spawn "wofi" "--show" "drun"; }
     Mod+B { spawn "brave-browser"; }
     Mod+E { spawn "thunar"; }
+    Mod+Shift+M { spawn "bash" "$HOME/dotfiles/scripts/power-menu.sh"; }
     Super+Alt+L { spawn "swaylock"; }
 
     // Controles de volume (PipeWire)
