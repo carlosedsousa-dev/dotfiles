@@ -1,5 +1,5 @@
-width=400
-height=500
+width=500
+height=600
 location=center
 show=drun
 prompt=Pesquisar...
@@ -9,6 +9,6 @@ no_actions=true
 halign=fill
 orientation=vertical
 content_halign=fill
-insensitivy=true
+insensitive=true
 allow_images=true
-image_size=28
+image_size=32
