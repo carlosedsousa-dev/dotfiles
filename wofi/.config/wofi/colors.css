@@ -1,0 +1,7 @@
+/* Cores extraídas do seu tema */
+@define-color bg-window rgba(26, 27, 38, 0.9);
+@define-color border-accent #7aa2f7;
+@define-color input-bg rgba(122, 162, 247, 0.1);
+@define-color text-main #c0caf5;
+@define-color selection-bg rgba(122, 162, 247, 0.2);
+@define-color text-selected #7aa2f7;

@@ -1,3 +1,6 @@
+/* Importa as cores desacopladas */
+@import "./.config/waybar/colors.css";
+
 * {
     font-family: "JetBrainsMono Nerd Font", monospace;
     font-size: 13px;
@@ -5,7 +8,6 @@
     border: none;
 }
 
-/* Esconde a barra de fundo principal */
 window#waybar {
     background-color: transparent;
 }
@@ -20,34 +22,33 @@ window#waybar {
 #network,
 #battery,
 #tray {
-    background-color: rgba(26, 27, 38, 0.65); /* Transparência azulada */
-    border: 2px solid rgba(122, 162, 247, 0.4); /* Borda azul sutil */
+    background-color: @bg-island;
+    border: 2px solid @border-island;
     border-radius: 15px;
     padding: 2px 12px;
-    color: #c0caf5;
+    color: @text-main;
+    margin: 5px 2px; /* Adicionado um pequeno respiro entre ilhas */
 }
 
 /* Destaque para o Workspace ativo */
 #workspaces button.focused {
-    background-color: rgba(122, 162, 247, 0.8);
-    color: #1a1b26;
+    background-color: @focused-bg;
+    color: @focused-text;
     border-radius: 12px;
 }
 
 #workspaces button {
-    color: #7aa2f7;
+    color: @accent-blue;
 }
 
-/* Cores das Ilhas de Hardware para leitura rápida */
-#cpu { color: #7aa2f7; }
-#memory { color: #bb9af7; }
+/* Cores das Ilhas de Hardware */
+#cpu { color: @accent-blue; }
+#memory { color: @accent-purple; }
 
-/* Relógio Central mais limpo */
 #clock {
-    color: #ffffff;
+    color: @clock-text;
 }
 
-/* Remove a ilha do título se não houver janelas abertas no Niri */
 window#waybar.empty #window {
     background-color: transparent;
     border: none;

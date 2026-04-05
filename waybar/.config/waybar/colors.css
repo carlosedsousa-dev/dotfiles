@@ -1,0 +1,9 @@
+/* Definições de Cores */
+@define-color bg-island rgba(26, 27, 38, 0.65);
+@define-color border-island rgba(122, 162, 247, 0.4);
+@define-color text-main #c0caf5;
+@define-color accent-blue #7aa2f7;
+@define-color accent-purple #bb9af7;
+@define-color focused-bg rgba(122, 162, 247, 0.8);
+@define-color focused-text #1a1b26;
+@define-color clock-text #ffffff;
