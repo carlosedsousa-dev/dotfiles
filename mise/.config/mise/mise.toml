@@ -2,3 +2,4 @@
 usage = "latest"
 uv = "latest"
 node = "24"
+eza = "latest"

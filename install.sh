@@ -18,9 +18,6 @@ PACKAGES=(
     # Adição de compatibilidades com tipos de chaves SSH usadas pelo Mise
     openssl
     ca-certificates
-
-    # Substituto moderno para o ls
-    eza
 )
 
 # Pacotes específico do APT
