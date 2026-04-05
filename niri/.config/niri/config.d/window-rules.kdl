@@ -1,0 +1,20 @@
+// Regras específicas para janelas
+window-rule {
+    // Arredondamento dos cantos das janelas
+    geometry-corner-radius 12
+    // Força o conteúdo da janela a ser cortado no círculo do canto
+    clip-to-geometry true
+}
+
+// Regras para janelas flutuantes (Apps que não devem ocupar a tela toda)
+window-rule {
+    match app-id="pavucontrol"
+    open-floating true
+    default-column-width { proportion 0.4; }
+    default-window-height { proportion 0.4; }
+}
+
+window-rule {
+    match title="Bitwarden — Brave"
+    open-floating true
+}

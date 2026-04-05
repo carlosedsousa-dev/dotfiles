@@ -1,0 +1,3 @@
+// Inicialização de programas
+// Define os apps que sobem junto com o sistema
+spawn-at-startup "waybar"

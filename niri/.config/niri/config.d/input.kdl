@@ -1,0 +1,12 @@
+// Configurações de dispositivos de entrada
+input {
+    keyboard {
+        // Garante que o teclado numérico esteja ligado
+        numlock
+    }
+
+    mouse {
+        // Configurações de scroll e aceleração podem ser inseridas aqui
+        // natural-scroll
+    }
+}

@@ -1,0 +1,39 @@
+// Configurações de aparência e comportamento das janelas
+layout {
+    // Espaço entre as janelas (espaçamento externo)
+    gaps 16
+    
+    // Impede que o Niri centralize a coluna focada à força
+    center-focused-column "never"
+
+    // Atalhos de largura para as colunas (alternáveis com Mod+R)
+    preset-column-widths {
+        proportion 0.35
+        proportion 0.50
+        proportion 0.65
+    }
+
+    // Atalhos de altura para janelas em pilhas (Mod+Shift+R)
+    preset-window-heights {
+        proportion 0.50
+        proportion 1.00
+    }
+
+    // Largura que uma janela nova terá ao ser aberta
+    default-column-width { proportion 0.5; }
+
+    // Estilo da borda de destaque da janela ativa
+    focus-ring {
+        width 4
+        active-color "#7aa2f7CC"
+        inactive-color "#24283b80"
+    }
+    
+    // Efeito de sombra ao redor das janelas
+    shadow {
+        on
+        softness 12
+        spread 5
+        color "#00000066"
+    }
+}

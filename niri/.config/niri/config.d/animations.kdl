@@ -1,0 +1,20 @@
+// Configurações de fluidez e movimento
+animations {
+    // Velocidade geral das animações (menor é mais rápido)
+    slowdown 0.8
+
+    window-open {
+        duration-ms 250
+        curve "ease-out-cubic"
+    }
+    
+    window-close {
+        duration-ms 150
+        curve "ease-out-cubic"
+    }
+
+    horizontal-view-movement {
+        duration-ms 400
+        curve "ease-out-cubic"
+    }
+}
