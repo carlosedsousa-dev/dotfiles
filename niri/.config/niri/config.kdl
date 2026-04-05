@@ -1,5 +1,7 @@
 include "config.d/animations.kdl";
 include "config.d/binds.kdl";
+include "config.d/extra.kdl";
+include "config.d/global.kdl";
 include "config.d/input.kdl";
 include "config.d/layout.kdl";
 include "config.d/spawn.kdl";

@@ -1,0 +1,3 @@
+// Preferências globais
+// Remove as decorações nativas das janelas (barras de título de apps GTK)
+prefer-no-csd
