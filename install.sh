@@ -13,6 +13,7 @@ PACKAGES=(
     git
     pavucontrol
     kitty
+    wofi
 
     # Adição de compatibilidades com tipos de chaves SSH usadas pelo Mise
     openssl
