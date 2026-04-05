@@ -1,54 +1,43 @@
-# Dotfiles
+# 🚀 Dotfiles: Core Architecture
 
-Minhas configurações de ambiente automatizadas para Linux (Ubuntu/Debian, Fedora e derivados), agora com suporte a perfis de **Desktop** e **Server**.
+Um ecossistema automatizado para provisionamento de ambientes Unix-like, focado em produtividade e consistência através de diferentes distribuições Linux e Termux.
 
-> **Por que este repositório existe?** > Este projeto surgiu da necessidade de manter consistência e rapidez no setup ao transitar entre diferentes máquinas, garantindo que meu fluxo de trabalho seja idêntico em qualquer lugar, seja no meu laptop principal ou em um servidor remoto/homelab via SSH.
+## 🛠️ Stack Tecnológica
 
-## 🌿 Escolha seu Perfil
+| Ferramenta | Função |
+| :--- | :--- |
+| **[Mise](https://mise.jdx.dev/)** | Polyglot runtime manager (alternativa moderna ao asdf). Gerencia versões de Node, Python, Go, etc. |
+| **[GNU Stow](https://www.gnu.org/software/stow/)** | Gerenciador de symlinks para arquivos de configuração (dotfiles). |
+| **[Antidote](https://getantidote.github.io/)** | Gerenciador de plugins Zsh ultra-rápido baseado em clones nativos. |
+| **[Eza](https://github.com/eza-community/eza)** | Substituto moderno e colorido para o comando `ls`. |
+| **Zsh** | Shell principal com integração de plugins e aliases otimizados. |
 
-Este repositório possui duas branches principais para atender diferentes cenários:
+## 🌿 Estrutura de Branches
 
-* **`main` (Desktop):** Setup completo com todas as ferramentas de desenvolvimento, interfaces ricas e configurações visuais.
-* **`server` (Minimal):** Versão enxuta focada em performance e estabilidade para servidores, contendo apenas o essencial.
+*   **`core` (Desktop/Dev):** Setup completo. Inclui gerenciadores de runtime (Mise), plugins visuais e ferramentas de desenvolvimento.
+*   **`server` (Minimal/SSH):** Versão enxuta. Focada em performance e estabilidade para ambientes de servidor, contendo apenas o essencial para navegação e edição.
 
-## 🚀 Instalação
+## ⚙️ Instalação Inteligente
 
-Para configurar seu ambiente, escolha a branch e rode o script:
+O script `install.sh` opera com detecção dinâmica de ambiente e gerenciamento de estado:
 
-### No Desktop (Perfil Completo)
-```bash
-git clone https://github.com/carlosedsousa-dev/dotfiles.git ~/dotfiles
-cd ~/dotfiles
-./install.sh
-```
+1.  **Detecção de PM:** Suporte nativo para `APT` (Debian/Ubuntu), `DNF` (Fedora), `Zypper` (OpenSUSE) e `PKG` (Termux).
+2.  **Idempotência:** Antes de cada instalação, o script verifica via `dpkg`, `rpm` ou `pkg list` se o pacote já existe, evitando chamadas desnecessárias ao sudo e consumo de banda.
+3.  **Bootstrap Automático:** Instala automaticamente o `Mise`, `Antidote` e `Stow` caso não estejam presentes.
+4.  **Gestão de Conflitos:** Limpa links simbólicos ou arquivos órfãos antes de aplicar os novos módulos via Stow.
+5.  **Provisionamento Global:** Após o setup base, o `Mise` provisiona todas as ferramentas definidas no `mise.toml`.
 
-### No Servidor (Perfil Minimalista)
-```bash
-git clone -b server https://github.com/carlosedsousa-dev/dotfiles.git ~/dotfiles
-cd ~/dotfiles
-./install.sh
-```
+## 📂 Organização de Módulos
 
-⚠️ **Atenção:** O script `install.sh` detecta automaticamente as dependências necessárias. No perfil `main`, ele instala gerenciadores de runtime (Mise) e plugins de shell. No perfil `server`, ele prioriza ferramentas leves.
+As configurações são organizadas em pastas compatíveis com o `Stow`:
 
-## 🛠️ Como funciona
+*   `zsh/`: `.zshrc`, `.zsh_plugins.txt`, `.aliases.zsh`, `.bindkeys.zsh`.
+*   `mise/`: `.config/mise/mise.toml`.
 
-Este ecossistema utiliza ferramentas consagradas para manter a ordem:
+## ⚡ Produtividade (Aliases)
 
-* **[GNU Stow](https://www.gnu.org/software/stow/):** Gerencia os links simbólicos das configurações de forma não destrutiva.
-* **[Mise en Place](https://mise.jdx.dev/):** Gerenciador de runtimes e ferramentas (focado em produtividade na `main`).
-* **[Antidote](https://antidote.sh/):** Gerenciador de plugins Zsh de alta performance.
-* **Detecção Inteligente:** Scripts que identificam o gerenciador de pacotes (APT/DNF) e o ambiente para aplicar as configurações corretas.
-
-## ⚡ Aliases Principais
-
-Os atalhos de produtividade estão centralizados em `zsh/.aliases.zsh`:
-
-* **Git Essentials:** Fluxo completo (status, commit, logs gráficos).
-* **Dotfiles Management:** Atalhos `dot` (navegar), `edot` (editar) e `szsh` (recarregar).
-* **Navegação & Server:** Atalhos rápidos para monitoramento de recursos e movimentação entre diretórios.
-
-## 📂 Estrutura do Projeto
-
-* `zsh/`: Configurações do shell, plugins e o arquivo `.aliases.zsh`.
-* `install.sh`: Script de instalação inteligente.
+Os aliases principais em `zsh/.aliases.zsh` incluem:
+*   `dot`: Navegação rápida para o diretório de dotfiles.
+*   `edot`: Edição rápida das configurações.
+*   `szsh`: Recarregamento instantâneo do contexto do shell.
+*   Workflow Git simplificado (status, commits, logs).
