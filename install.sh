@@ -52,6 +52,7 @@ STOW_MODULES=(
     niri
     waybar
     kitty
+    wofi
 )
 
 # Lista de arquivos para limpar antes do Stow
