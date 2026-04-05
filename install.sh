@@ -16,7 +16,7 @@ PACKAGES=(
     openssl
     ca-certificates
 
-    # Substitudo moderno para o ls
+    # Substituto moderno para o ls
     eza
 )
 
@@ -28,6 +28,11 @@ APT_SPECIFIC=(
 # Pacotes específico do DNF
 DNF_SPECIFIC=(
     openssl-devel
+)
+
+# Pacotes específico do Zypper
+ZYPPER_SPECIFIC=(
+    libopenssl-devel
 )
 
 # Lista de módulos do Stow para aplicar
@@ -56,21 +61,47 @@ elif command -v apt-get &> /dev/null; then
 elif command -v dnf &> /dev/null; then
     PM="dnf"
     FINAL_PACKAGES=("${PACKAGES[@]}" "${DNF_SPECIFIC[@]}")
+elif command -v zypper &> /dev/null; then
+    PM="zypper"
+    FINAL_PACKAGES=("${PACKAGES[@]}" "${ZYPPER_SPECIFIC[@]}")
 fi
 
-echo "Instalando via $PM..."
+# Função de verificação de existência do pacote
+is_installed() {
+    local pkg=$1
+    case "$PM" in
+        pkg) pkg list-installed "$pkg" &>/dev/null ;;
+        apt) dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -q "ok installed" ;;
+        dnf|zypper) rpm -q "$pkg" &>/dev/null ;;
+    esac
+}
 
-if [ "$PM" == "pkg" ]; then
-    pkg update && pkg install -y "${FINAL_PACKAGES[@]}"
-elif [ "$PM" == "apt" ]; then
-    sudo apt-get update -y && sudo apt-get install -y "${FINAL_PACKAGES[@]}"
-    sudo update-ca-certificates
-elif [ "$PM" == "dnf" ]; then
-    sudo dnf install -y "${FINAL_PACKAGES[@]}"
-    sudo update-ca-trust
+echo "Verificando pacotes necessários via $PM..."
+MISSING_PACKAGES=()
+for pkg in "${FINAL_PACKAGES[@]}"; do
+    if ! is_installed "$pkg"; then
+        MISSING_PACKAGES+=("$pkg")
+    fi
+done
+
+if [ ${#MISSING_PACKAGES[@]} -gt 0 ]; then
+    echo "Instalando pacotes ausentes: ${MISSING_PACKAGES[*]}"
+    if [ "$PM" == "pkg" ]; then
+        pkg update && pkg install -y "${MISSING_PACKAGES[@]}"
+    elif [ "$PM" == "apt" ]; then
+        sudo apt-get update -y && sudo apt-get install -y "${MISSING_PACKAGES[@]}"
+        sudo update-ca-certificates
+    elif [ "$PM" == "dnf" ]; then
+        sudo dnf install -y "${MISSING_PACKAGES[@]}"
+        sudo update-ca-trust
+    elif [ "$PM" == "zypper" ]; then
+        sudo zypper install -y "${MISSING_PACKAGES[@]}"
+    fi
+else
+    echo "Todos os pacotes base já estão instalados."
 fi
 
-# Instalação do Mise
+# Instalação do Mise (Gerenciador de Runtime)
 if ! command -v mise &> /dev/null; then
     echo "Instalando Mise..."
     curl https://mise.run | sh
@@ -83,12 +114,13 @@ if command -v mise &> /dev/null; then
     mise completion zsh > "$ZSH_COMPLETIONS_DIR/_mise"
 fi
 
-# Antidote
+# Antidote (Gerenciador de Plugins Zsh)
 if [ ! -d "$ANTIDOTE_DIR" ]; then
+    echo "Instalando Antidote..."
     git clone --depth=1 https://github.com/mattmc3/antidote.git "$ANTIDOTE_DIR"
 fi
 
-echo "Limpando conflitos..."
+echo "Limpando conflitos de arquivos antigos..."
 for item in "${CLEANUP_LIST[@]}"; do 
     rm -rf "$HOME/$item"
 done
@@ -99,15 +131,16 @@ for module in "${STOW_MODULES[@]}"; do
     stow "$module"
 done
 
-# Instalação de Ferramentas
-echo "Instalando ferramentas globais..."
+# Instalação de Ferramentas via Mise (conforme mise.toml)
+echo "Provisionando ferramentas globais via Mise..."
 if ! mise install -y; then
-    echo "Erro de verificação detetado. Tentando self-update..."
+    echo "Erro de verificação detectado. Tentando self-update..."
     mise self-update && mise install -y
 fi
 
-# Troca de Shell
+# Troca de Shell para Zsh
 if [ "$(basename "$SHELL")" != "zsh" ]; then
+    echo "Alterando shell padrão para zsh..."
     if [ "$PM" == "pkg" ]; then
         chsh -s zsh
     else
