@@ -1,0 +1,59 @@
+{
+    "layer": "top",
+    "position": "top",
+    "height": 34,
+    "margin-top": 8,
+    "margin-left": 10,
+    "margin-right": 10,
+    "spacing": 8,
+
+    "modules-left": ["niri/workspaces", "niri/window"],
+    "modules-center": ["clock"],
+    "modules-right": ["cpu", "memory", "pulseaudio", "network", "battery", "tray"],
+
+    "niri/workspaces": {
+        "format": "{index}",
+        "all-outputs": true
+    },
+
+    "niri/window": {
+        "format": "{title}",
+        "max-length": 30
+    },
+
+    "clock": {
+        "format": "󰃰 {:%H:%M}"
+    },
+
+    "cpu": {
+        "format": " {usage}%",
+        "interval": 5 // Aumentei o intervalo para poupar o Celeron
+    },
+
+    "memory": {
+        "format": " {percentage}%",
+        "interval": 5
+    },
+
+    "network": {
+        "format-wifi": " {essid}",
+        "format-ethernet": "󰈀 {ipaddr}",
+        "format-disconnected": "󰖪 Off",
+        "on-click": "kitty -e nmtui"
+    },
+
+    "pulseaudio": {
+        "format": "{icon} {volume}%",
+        "format-icons": ["󰕿", "󰖀", "󰕾"],
+        "on-click": "pavucontrol"
+    },
+
+    "battery": {
+        "format": "{icon} {capacity}%",
+        "format-icons": ["󰂎", "󰁺", "󰁹"]
+    },
+
+    "tray": {
+        "spacing": 10
+    }
+}

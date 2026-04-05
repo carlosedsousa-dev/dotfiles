@@ -1,0 +1,54 @@
+* {
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-size: 13px;
+    font-weight: bold;
+    border: none;
+}
+
+/* Esconde a barra de fundo principal */
+window#waybar {
+    background-color: transparent;
+}
+
+/* Configuração de cada Ilha Separada */
+#workspaces,
+#window,
+#clock,
+#cpu,
+#memory,
+#pulseaudio,
+#network,
+#battery,
+#tray {
+    background-color: rgba(26, 27, 38, 0.65); /* Transparência azulada */
+    border: 2px solid rgba(122, 162, 247, 0.4); /* Borda azul sutil */
+    border-radius: 15px;
+    padding: 2px 12px;
+    color: #c0caf5;
+}
+
+/* Destaque para o Workspace ativo */
+#workspaces button.focused {
+    background-color: rgba(122, 162, 247, 0.8);
+    color: #1a1b26;
+    border-radius: 12px;
+}
+
+#workspaces button {
+    color: #7aa2f7;
+}
+
+/* Cores das Ilhas de Hardware para leitura rápida */
+#cpu { color: #7aa2f7; }
+#memory { color: #bb9af7; }
+
+/* Relógio Central mais limpo */
+#clock {
+    color: #ffffff;
+}
+
+/* Remove a ilha do título se não houver janelas abertas no Niri */
+window#waybar.empty #window {
+    background-color: transparent;
+    border: none;
+}

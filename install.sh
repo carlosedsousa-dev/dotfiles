@@ -11,6 +11,8 @@ PACKAGES=(
     stow
     curl
     git
+    pavucontrol
+    kitty
 
     # Adição de compatibilidades com tipos de chaves SSH usadas pelo Mise
     openssl
@@ -23,22 +25,32 @@ PACKAGES=(
 # Pacotes específico do APT
 APT_SPECIFIC=(
     libssl-dev
+    fonts-jetbrains-mono
+    fonts-roboto
 )
 
 # Pacotes específico do DNF
 DNF_SPECIFIC=(
     openssl-devel
+    jetbrains-mono-fonts
+    google-roboto-fonts
+    symbols-only-nerd-fonts
 )
 
 # Pacotes específico do Zypper
 ZYPPER_SPECIFIC=(
     libopenssl-devel
+    jetbrains-mono-fonts
+    google-roboto-fonts
 )
 
 # Lista de módulos do Stow para aplicar
 STOW_MODULES=(
     zsh
     mise
+    niri
+    waybar
+    kitty
 )
 
 # Lista de arquivos para limpar antes do Stow
@@ -48,6 +60,10 @@ CLEANUP_LIST=(
     .zsh_plugins.txt
     .aliases
     .bindkeys
+    .config/kitty
+    .config/niri/config.kdl
+    .config/waybar/config
+    .config/waybar/style.css
 )
 
 echo "Detectando sistema..."
@@ -96,6 +112,12 @@ if [ ${#MISSING_PACKAGES[@]} -gt 0 ]; then
         sudo update-ca-trust
     elif [ "$PM" == "zypper" ]; then
         sudo zypper install -y "${MISSING_PACKAGES[@]}"
+    fi
+    
+    # Atualiza o cache de fontes caso novas fontes tenham sido instaladas
+    if command -v fc-cache &> /dev/null; then
+        echo "Atualizando cache de fontes..."
+        fc-cache -fv
     fi
 else
     echo "Todos os pacotes base já estão instalados."

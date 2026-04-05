@@ -1,0 +1,186 @@
+// Preferências globais
+// Remove as decorações nativas das janelas (barras de título de apps GTK)
+prefer-no-csd
+
+// Desativa menu de atalhos
+hotkey-overlay {
+    skip-at-startup
+} 
+
+// Inicialização de programas
+// Define os apps que sobem junto com o sistema
+spawn-at-startup "waybar"
+
+// Caminho para salvar prints
+screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+
+// Configurações de dispositivos de entrada
+input {
+    keyboard {
+        // Garante que o teclado numérico esteja ligado
+        numlock
+    }
+
+    mouse {
+        // Configurações de scroll e aceleração podem ser inseridas aqui
+        // natural-scroll
+    }
+}
+
+// Configurações de aparência e comportamento das janelas
+layout {
+    // Espaço entre as janelas (espaçamento externo)
+    gaps 16
+    
+    // Impede que o Niri centralize a coluna focada à força
+    center-focused-column "never"
+
+    // Atalhos de largura para as colunas (alternáveis com Mod+R)
+    preset-column-widths {
+        proportion 0.35
+        proportion 0.50
+        proportion 0.65
+    }
+
+    // Atalhos de altura para janelas em pilhas (Mod+Shift+R)
+    preset-window-heights {
+        proportion 0.50
+        proportion 1.00
+    }
+
+    // Largura que uma janela nova terá ao ser aberta
+    default-column-width { proportion 0.5; }
+
+    // Estilo da borda de destaque da janela ativa
+    focus-ring {
+        width 4
+        active-color "#7aa2f7CC"
+        inactive-color "#24283b80"
+    }
+    
+    // Efeito de sombra ao redor das janelas
+    shadow {
+        on
+        softness 12
+        spread 5
+        color "#00000066"
+    }
+}
+
+// Configurações de fluidez e movimento
+animations {
+    // Velocidade geral das animações (menor é mais rápido)
+    slowdown 0.8
+
+    window-open {
+        duration-ms 250
+        curve "ease-out-cubic"
+    }
+    
+    window-close {
+        duration-ms 150
+        curve "ease-out-cubic"
+    }
+
+    horizontal-view-movement {
+        duration-ms 400
+        curve "ease-out-cubic"
+    }
+}
+
+// Regras específicas para janelas
+window-rule {
+    // Arredondamento dos cantos das janelas
+    geometry-corner-radius 12
+    // Força o conteúdo da janela a ser cortado no círculo do canto
+    clip-to-geometry true
+}
+
+// Atalhos de teclado
+binds {
+    // Ajuda: mostra a lista de atalhos na tela
+    Mod+Shift+Slash { show-hotkey-overlay; }
+
+    // Execução de programas básicos
+    Mod+T { spawn "kitty"; }
+    Mod+D { spawn "fuzzel"; }
+    Mod+B { spawn "brave-browser"; }
+    Mod+E { spawn "thunar"; }
+    Super+Alt+L { spawn "swaylock"; }
+
+    // Controles de volume (PipeWire)
+    XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+ -l 1.0"; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-"; }
+    XF86AudioMute        allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
+    XF86AudioMicMute     allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
+
+    // Controles de mídia (Playerctl)
+    XF86AudioPlay        allow-when-locked=true { spawn-sh "playerctl play-pause"; }
+    XF86AudioStop        allow-when-locked=true { spawn-sh "playerctl stop"; }
+    XF86AudioPrev        allow-when-locked=true { spawn-sh "playerctl previous"; }
+    XF86AudioNext        allow-when-locked=true { spawn-sh "playerctl next"; }
+
+    // Brilho da tela
+    XF86MonBrightnessUp   allow-when-locked=true { spawn "brightnessctl" "set" "+10%"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "set" "10%-"; }
+
+    // Gerenciamento da janela focada
+    Mod+Q { close-window; }
+    Mod+O { toggle-overview; }
+    Mod+F { maximize-column; }
+    Mod+Shift+F { fullscreen-window; }
+    Mod+C { center-column; }
+    Mod+V { toggle-window-floating; }
+
+    // Movimentação do foco
+    Mod+Left  { focus-column-left; }
+    Mod+Right { focus-column-right; }
+    Mod+Up    { focus-window-up; }
+    Mod+Down  { focus-window-down; }
+
+    // Movimentação das janelas de lugar
+    Mod+Ctrl+Left  { move-column-left; }
+    Mod+Ctrl+Right { move-column-right; }
+    Mod+Ctrl+Up    { move-window-up; }
+    Mod+Ctrl+Down  { move-window-down; }
+
+    // Navegação por áreas de trabalho (Workspaces)
+    Mod+1 { focus-workspace 1; }
+    Mod+2 { focus-workspace 2; }
+    Mod+3 { focus-workspace 3; }
+    Mod+4 { focus-workspace 4; }
+    Mod+5 { focus-workspace 5; }
+    Mod+6 { focus-workspace 6; }
+    Mod+7 { focus-workspace 7; }
+    Mod+8 { focus-workspace 8; }
+    Mod+9 { focus-workspace 9; }
+
+    Mod+Ctrl+1 { move-column-to-workspace 1; }
+    Mod+Ctrl+2 { move-column-to-workspace 2; }
+    Mod+Ctrl+3 { move-column-to-workspace 3; }
+    Mod+Ctrl+4 { move-column-to-workspace 4; }
+    Mod+Ctrl+5 { move-column-to-workspace 5; }
+
+    // Organização de colunas e pilhas
+    // Adiciona ou remove janelas de uma coluna (agrupamento)
+    Mod+BracketLeft  { consume-or-expel-window-left; }
+    Mod+BracketRight { consume-or-expel-window-right; }
+    // Alterna a visualização da coluna para abas (estilo navegador)
+    Mod+W { toggle-column-tabbed-display; }
+
+    // Redimensionamento manual
+    Mod+R { switch-preset-column-width; }
+    Mod+Minus { set-column-width "-10%"; }
+    Mod+Equal { set-column-width "+10%"; }
+
+    // Atalhos para captura de tela
+    Print { screenshot; }
+    Ctrl+Print { screenshot-screen; }
+    Alt+Print { screenshot-window; }
+
+    // Sistema e saída
+    // Desativa atalhos do Niri (útil para jogos ou máquinas virtuais)
+    Mod+Escape { toggle-keyboard-shortcuts-inhibit; }
+    Mod+Shift+E { quit; }
+    Mod+Shift+P { power-off-monitors; }
+}
