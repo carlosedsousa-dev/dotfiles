@@ -103,7 +103,7 @@ binds {
 
     // Execução de programas básicos
     Mod+T { spawn "kitty"; }
-    Mod+D { spawn "fuzzel"; }
+    Mod+D { spawn "wofi" "--show" "drun"; }
     Mod+B { spawn "brave-browser"; }
     Mod+E { spawn "thunar"; }
     Super+Alt+L { spawn "swaylock"; }

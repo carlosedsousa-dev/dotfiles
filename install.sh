@@ -64,6 +64,8 @@ CLEANUP_LIST=(
     .config/niri/config.kdl
     .config/waybar/config
     .config/waybar/style.css
+    .config/wofi/config
+    .config/wofi/style.css
 )
 
 echo "Detectando sistema..."
