@@ -21,13 +21,6 @@ layout {
 
     // Largura que uma janela nova terá ao ser aberta
     default-column-width { proportion 0.5; }
-
-    // Estilo da borda de destaque da janela ativa
-    focus-ring {
-        width 4
-        active-color "#7aa2f7CC"
-        inactive-color "#24283b80"
-    }
     
     // Efeito de sombra ao redor das janelas
     shadow {

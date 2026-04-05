@@ -4,4 +4,4 @@ hotkey-overlay {
 } 
 
 // Caminho para salvar prints
-screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+screenshot-path "~/Imagens/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"

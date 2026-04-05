@@ -1,0 +1,8 @@
+layout {
+    // Estilo da borda de destaque da janela ativa
+    focus-ring {
+        width 4
+        active-color "#7aa2f7CC"
+        inactive-color "#24283b80"
+    }
+}
