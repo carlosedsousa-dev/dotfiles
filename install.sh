@@ -69,10 +69,7 @@ CLEANUP_LIST=(
 
 echo "Detectando sistema..."
 
-if [ -n "$TERMUX_VERSION" ] || command -v pkg &> /dev/null; then
-    PM="pkg"
-    FINAL_PACKAGES=("${PACKAGES[@]}")
-elif command -v apt-get &> /dev/null; then
+if command -v apt-get &> /dev/null; then
     PM="apt"
     FINAL_PACKAGES=("${PACKAGES[@]}" "${APT_SPECIFIC[@]}")
 elif command -v dnf &> /dev/null; then
@@ -87,7 +84,6 @@ fi
 is_installed() {
     local pkg=$1
     case "$PM" in
-        pkg) pkg list-installed "$pkg" &>/dev/null ;;
         apt) dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -q "ok installed" ;;
         dnf|zypper) rpm -q "$pkg" &>/dev/null ;;
     esac
@@ -103,9 +99,7 @@ done
 
 if [ ${#MISSING_PACKAGES[@]} -gt 0 ]; then
     echo "Instalando pacotes ausentes: ${MISSING_PACKAGES[*]}"
-    if [ "$PM" == "pkg" ]; then
-        pkg update && pkg install -y "${MISSING_PACKAGES[@]}"
-    elif [ "$PM" == "apt" ]; then
+    if [ "$PM" == "apt" ]; then
         sudo apt-get update -y && sudo apt-get install -y "${MISSING_PACKAGES[@]}"
         sudo update-ca-certificates
     elif [ "$PM" == "dnf" ]; then
@@ -164,11 +158,7 @@ fi
 # Troca de Shell para Zsh
 if [ "$(basename "$SHELL")" != "zsh" ]; then
     echo "Alterando shell padrão para zsh..."
-    if [ "$PM" == "pkg" ]; then
-        chsh -s zsh
-    else
-        sudo chsh -s "$(which zsh)" "$USER"
-    fi
+    sudo chsh -s "$(which zsh)" "$USER"
 fi
 
 echo "Setup concluído com sucesso!"

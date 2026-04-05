@@ -1,6 +1,6 @@
 # 🚀 Dotfiles: Core Architecture
 
-Um ecossistema automatizado para provisionamento de ambientes Unix-like, focado em produtividade e consistência através de diferentes distribuições Linux e Termux.
+Um ecossistema automatizado para provisionamento de ambientes Unix-like, focado em produtividade e consistência através de diferentes distribuições Linux.
 
 ## 🛠️ Stack Tecnológica
 
@@ -21,8 +21,8 @@ Um ecossistema automatizado para provisionamento de ambientes Unix-like, focado 
 
 O script `install.sh` opera com detecção dinâmica de ambiente e gerenciamento de estado:
 
-1.  **Detecção de PM:** Suporte nativo para `APT` (Debian/Ubuntu), `DNF` (Fedora), `Zypper` (OpenSUSE) e `PKG` (Termux).
-2.  **Idempotência:** Antes de cada instalação, o script verifica via `dpkg`, `rpm` ou `pkg list` se o pacote já existe, evitando chamadas desnecessárias ao sudo e consumo de banda.
+1.  **Detecção de PM:** Suporte nativo para `APT` (Debian/Ubuntu), `DNF` (Fedora) e `Zypper` (OpenSUSE).
+2.  **Idempotência:** Antes de cada instalação, o script verifica via `dpkg` ou `rpm` se o pacote já existe, evitando chamadas desnecessárias ao sudo e consumo de banda.
 3.  **Bootstrap Automático:** Instala automaticamente o `Mise`, `Antidote` e `Stow` caso não estejam presentes.
 4.  **Gestão de Conflitos:** Limpa links simbólicos ou arquivos órfãos antes de aplicar os novos módulos via Stow.
 5.  **Provisionamento Global:** Após o setup base, o `Mise` provisiona todas as ferramentas definidas no `mise.toml`.
