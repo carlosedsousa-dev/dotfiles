@@ -1,0 +1,65 @@
+/* Janela Principal */
+window {
+    margin: 10px;
+    background-color: rgba(26, 27, 38, 0.9); /* Tokyo Night um pouco mais opaco para legibilidade */
+    border: 2px solid #7aa2f7;
+    border-radius: 16px;
+    font-family: "JetBrainsMono Nerd Font", monospace;
+    font-size: 14px;
+    padding: 10px;
+}
+
+/* Caixa de Busca */
+#input {
+    margin: 20px;
+    padding: 15px;
+    border: none;
+    border-radius: 12px;
+    background-color: rgba(122, 162, 247, 0.1);
+    color: #c0caf5;
+    border-bottom: 2px solid #7aa2f7;
+    font-size: 16px;
+}
+
+/* Container da Lista */
+#inner-box {
+    margin: 10px 20px;
+    background-color: transparent;
+}
+
+/* Cada Item da Lista (O Card) */
+#entry {
+    margin: 8px 0px;
+    padding: 12px 15px;
+    border: 1px solid transparent;
+    border-radius: 10px;
+    transition: all 0.2s ease-in-out;
+}
+
+/* O "Card" quando você passa o mouse ou seleciona com as setas */
+#entry:selected {
+    background-color: rgba(122, 162, 247, 0.2);
+    border: 1px solid #7aa2f7;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+/* Ícones dos Aplicativos */
+#img {
+    margin-right: 20px;
+}
+
+/* Texto dos Aplicativos */
+#text {
+    color: #c0caf5;
+}
+
+/* Texto quando selecionado (Destaque Azul) */
+#text:selected {
+    color: #7aa2f7;
+    font-weight: bold;
+}
+
+/* Remove fundos genéricos que podem bugar o visual */
+#scroll {
+    background-color: transparent;
+}
