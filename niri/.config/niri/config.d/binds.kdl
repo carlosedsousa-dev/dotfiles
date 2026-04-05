@@ -8,7 +8,7 @@ binds {
     Mod+D { spawn "wofi" "--show" "drun"; }
     Mod+B { spawn "brave-browser"; }
     Mod+E { spawn "thunar"; }
-    Mod+Shift+M { spawn "bash" "$HOME/dotfiles/scripts/power-menu.sh"; }
+    Mod+Shift+M { spawn "power-menu.sh"; }
     Super+Alt+L { spawn "swaylock"; }
 
     // Controles de volume (PipeWire)
