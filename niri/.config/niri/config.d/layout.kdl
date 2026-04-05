@@ -31,9 +31,6 @@ layout {
     
     // Efeito de sombra ao redor das janelas
     shadow {
-        on
-        softness 12
-        spread 5
-        color "#00000066"
+        off 
     }
 }
