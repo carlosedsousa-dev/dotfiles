@@ -1,9 +1,6 @@
 # Meus Aliases Personalizados
 # Localização original: ~/dotfiles/zsh/.aliases
 
-# Alias de atualização dotfiles
-alias dotup="cd ~/dotfiles && git pull && ./install.sh && source ~/.zshrc"
-
 # Status e Adição
 alias gst='git status'
 alias ga='git add'
@@ -24,6 +21,7 @@ alias gd='git diff'
 alias glog="git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
 
 # Gestão de Dotfiles
+alias dotup="cd ~/dotfiles && git pull && ./update.sh && source ~/.zshrc"
 alias dot='cd ~/dotfiles'
 alias edot='$EDITOR ~/dotfiles/zsh/.zshrc'
 alias szsh='source ~/.zshrc'
