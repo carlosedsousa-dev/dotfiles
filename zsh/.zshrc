@@ -38,7 +38,7 @@ autoload -Uz add-zsh-hook
 add-zsh-hook precmd load_mise
 
 # Path
-export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
+export PATH=":$HOME/.local/bin:$PATH"
 
 # Arquivos extras
 [[ -f ~/.bindkeys.zsh ]] && source ~/.bindkeys.zsh
