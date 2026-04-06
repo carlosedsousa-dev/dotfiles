@@ -20,7 +20,7 @@ PACKAGES=(
     jetbrains-mono-fonts
     google-roboto-fonts
     swww
-    -t pattern devel_basis
+    cargo
 )
 
 STOW_MODULES=(
@@ -55,11 +55,6 @@ CREATE_LIST=(
 # FUNÇÃO DE DETECÇÃO PARA ZYPPER
 is_installed() {
     local pkg=$1
-    if [[ "$pkg" == *"-t pattern"* ]]; then
-        local p_name="${pkg#*-t pattern }"
-        zypper search -i -t pattern "$p_name" &>/dev/null
-        return $?
-    fi
     rpm -q "$pkg" &>/dev/null
 }
 
@@ -103,16 +98,9 @@ fi
 
 # Rust e Matugen (Compilação)
 if ! command -v matugen &> /dev/null; then
-    echo "Matugen não encontrado. Iniciando instalação do ambiente Rust..."
-    if ! command -v cargo &> /dev/null; then
-        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --no-modify-path
-    fi
-    source "$HOME/.cargo/env"
     echo "Compilando Matugen (isso pode demorar)..."
     cargo install matugen
 fi
-
-source "$HOME/.cargo/env" 2>/dev/null
 
 # Mise Provisioning
 echo "Instalando ferramentas do Mise..."
