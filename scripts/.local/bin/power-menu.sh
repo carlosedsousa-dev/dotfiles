@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Garante que o script encontre o matugen, swww e outros binários do cargo/local
+export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
+
 opcoes="  Desligar\n󰑐  Reiniciar\n󰤄  Suspender\n󰗼  Sair"
 
 # Adicionei GDK_BACKEND aqui

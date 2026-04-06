@@ -1,0 +1,8 @@
+@define-color bg-island rgba({{colors.surface.default.red}}, {{colors.surface.default.green}}, {{colors.surface.default.blue}}, 0.65);
+@define-color border-island rgba({{colors.primary.default.red}}, {{colors.primary.default.green}}, {{colors.primary.default.blue}}, 0.4);
+@define-color text-main {{colors.on_surface.default.hex}};
+@define-color accent-blue {{colors.primary.default.hex}};
+@define-color accent-purple {{colors.tertiary.default.hex}};
+@define-color focused-bg {{colors.primary.default.hex}};
+@define-color focused-text {{colors.on_primary.default.hex}};
+@define-color clock-text {{colors.primary.default.hex}};

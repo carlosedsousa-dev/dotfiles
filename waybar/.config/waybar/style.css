@@ -1,9 +1,14 @@
 /* Importa as cores desacopladas */
-@import "./.config/waybar/colors.css";
+@import "colors.css";
+
+* {
+    /* Isso faz as cores "derreterem" suavemente em vez de piscar */
+    transition: background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
+}
 
 * {
     font-family: "JetBrainsMono Nerd Font", monospace;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: bold;
     border: none;
 }
@@ -24,10 +29,10 @@ window#waybar {
 #tray {
     background-color: @bg-island;
     border: 2px solid @border-island;
-    border-radius: 15px;
+    border-radius: 16px;
     padding: 2px 12px;
     color: @text-main;
-    margin: 5px 2px; /* Adicionado um pequeno respiro entre ilhas */
+    margin: 6px 2px; /* Adicionado um pequeno respiro entre ilhas */
 }
 
 /* Destaque para o Workspace ativo */
@@ -51,5 +56,4 @@ window#waybar {
 
 window#waybar.empty #window {
     background-color: transparent;
-    border: none;
 }

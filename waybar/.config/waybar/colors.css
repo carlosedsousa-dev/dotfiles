@@ -1,9 +1,8 @@
-/* Definições de Cores */
-@define-color bg-island rgba(26, 27, 38, 0.65);
-@define-color border-island rgba(122, 162, 247, 0.4);
-@define-color text-main #c0caf5;
-@define-color accent-blue #7aa2f7;
-@define-color accent-purple #bb9af7;
-@define-color focused-bg rgba(122, 162, 247, 0.8);
-@define-color focused-text #1a1b26;
-@define-color clock-text #ffffff;
+@define-color bg-island rgba(18, 19, 24, 0.65);
+@define-color border-island rgba(177, 198, 255, 0.4);
+@define-color text-main #e2e2e9;
+@define-color accent-blue #b1c6ff;
+@define-color accent-purple #e0bbdd;
+@define-color focused-bg #b1c6ff;
+@define-color focused-text #162e60;
+@define-color clock-text #b1c6ff;

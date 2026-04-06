@@ -1,0 +1,23 @@
+[config]
+version_check = false
+fallback_color = "#7aa2f7"
+prefer = "saturation"
+contrast = 0.0 # Contraste padrão para não estourar as cores
+
+# Configuração dos Templates
+
+[templates.kitty]
+input_path = "~/.config/matugen/templates/colors-kitty.conf"
+output_path = "~/.config/kitty/colors.conf"
+
+[templates.waybar]
+input_path = "~/.config/matugen/templates/colors-waybar.css"
+output_path = "~/.config/waybar/colors.css"
+
+[templates.wofi]
+input_path = "~/.config/matugen/templates/colors-wofi.css"
+output_path = "~/.config/wofi/colors.css"
+
+[templates.niri]
+input_path = "~/.config/matugen/templates/colors-niri.kdl"
+output_path = "~/.config/niri/config.d/colors.kdl"

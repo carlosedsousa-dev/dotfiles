@@ -2,8 +2,8 @@ layout {
     focus-ring {
         width 4
         // Cor principal do wallpaper com alpha (CC = ~80%)
-        active-color "#b1c6ffCC"
+        active-color "{{colors.primary.default.hex}}CC"
         // Cor de fundo/superfície com alpha (80 = ~50%)
-        inactive-color "#12131880"
+        inactive-color "{{colors.surface.default.hex}}80"
     }
 }

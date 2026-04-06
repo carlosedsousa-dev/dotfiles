@@ -9,6 +9,7 @@ binds {
     Mod+B { spawn "brave-browser"; }
     Mod+E { spawn "thunar"; }
     Mod+Shift+M { spawn "power-menu.sh"; }
+    Mod+Shift+W { spawn "select-wallpaper.sh"; }
     Super+Alt+L { spawn "swaylock"; }
 
     // Controles de volume (PipeWire)

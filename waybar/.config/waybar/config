@@ -6,6 +6,7 @@
     "margin-left": 10,
     "margin-right": 10,
     "spacing": 8,
+    "reload_style_on_change": true,
 
     "modules-left": ["niri/workspaces", "niri/window"],
     "modules-center": ["clock"],

@@ -50,6 +50,8 @@ STOW_MODULES=(
     waybar
     kitty
     wofi
+    matugen
+    scripts
 )
 
 # Lista de arquivos para limpar antes do Stow
@@ -60,11 +62,15 @@ CLEANUP_LIST=(
     .aliases
     .bindkeys
     .config/kitty
-    .config/niri/config.kdl
-    .config/waybar/config
-    .config/waybar/style.css
-    .config/wofi/config
-    .config/wofi/style.css
+    .config/niri/
+    .config/waybar/
+    .config/wofi/
+)
+
+CREATE_LIST=(
+    $HOME/Imagens/Wallpapers
+    $HOME/Imagens/Screenshots
+    $ZSH_COMPLETIONS_DIR
 )
 
 echo "Detectando sistema..."
@@ -118,6 +124,16 @@ else
     echo "Todos os pacotes base já estão instalados."
 fi
 
+echo "Limpando conflitos de arquivos antigos..."
+for item in "${CLEANUP_LIST[@]}"; do 
+    rm -rf "$HOME/$item"
+done
+
+echo "Criando pastas necessárias..."
+for item in "${CREATE_LIST[@]}"; do 
+    mkdir -p "$item"
+done
+
 # Instalação do Mise (Gerenciador de Runtime)
 if ! command -v mise &> /dev/null; then
     echo "Instalando Mise..."
@@ -125,8 +141,6 @@ if ! command -v mise &> /dev/null; then
     export PATH="$HOME/.local/share/mise/bin:$HOME/.local/bin:$PATH"
 fi
 
-# Autocomplete
-mkdir -p "$ZSH_COMPLETIONS_DIR"
 if command -v mise &> /dev/null; then
     mise completion zsh > "$ZSH_COMPLETIONS_DIR/_mise"
 fi
@@ -137,10 +151,26 @@ if [ ! -d "$ANTIDOTE_DIR" ]; then
     git clone --depth=1 https://github.com/mattmc3/antidote.git "$ANTIDOTE_DIR"
 fi
 
-echo "Limpando conflitos de arquivos antigos..."
-for item in "${CLEANUP_LIST[@]}"; do 
-    rm -rf "$HOME/$item"
-done
+echo "Atenção: A instalação do Rust e do Matugen exige compilação e pode demorar de 5 a 15 minutos no seu hardware."
+read -p "Deseja continuar com a instalação agora? (s/N): " confirmacao
+
+if [[ "$confirmacao" =~ ^[Ss]$ ]]; then
+    # Instalando cargo
+    if ! command -v cargo &> /dev/null; then
+        echo "Instalando Rust/Cargo..."
+        # Adicionado --no-modify-path para evitar a criação do .zshenv
+        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --no-modify-path
+        source "$HOME/.cargo/env"
+    fi
+
+    # Instalando matugen
+    if ! command -v matugen &> /dev/null; then
+        echo "Instalando Matugen via Cargo (Compilando...)..."
+        cargo install matugen
+    fi
+else
+    echo "Instalação do Rust/Matugen pulada pelo usuário."
+fi
 
 echo "Aplicando módulos do Stow..."
 cd "$DOTFILES_DIR" || exit
@@ -160,5 +190,11 @@ if [ "$(basename "$SHELL")" != "zsh" ]; then
     echo "Alterando shell padrão para zsh..."
     sudo chsh -s "$(which zsh)" "$USER"
 fi
+
+# Garante que o ambiente do Cargo esteja ativo para a sessão atual
+[ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
+
+# Garante que os binários locais estejam no PATH
+export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
 
 echo "Setup concluído com sucesso!"

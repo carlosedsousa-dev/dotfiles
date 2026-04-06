@@ -1,3 +1,4 @@
 // Inicialização de programas
 // Define os apps que sobem junto com o sistema
+spawn-at-startup "swww-daemon"
 spawn-at-startup "waybar"
