@@ -4,8 +4,8 @@ DOTFILES_DIR="$HOME/dotfiles"
 ANTIDOTE_DIR="${ZDOTDIR:-$HOME}/.antidote"
 ZSH_COMPLETIONS_DIR="$HOME/.zsh/completions"
 
-# Configuração de Listas (Modularidade)
-# Pacotes universais
+# Lista de pacotes para o Zypper
+# O padrão 'devel_basis' garante o linker (cc) e ferramentas de build
 PACKAGES=(
     zsh
     stow
@@ -16,28 +16,13 @@ PACKAGES=(
     wofi
     openssl
     ca-certificates
-)
-
-# Pacotes específico do DNF (Fedora)
-DNF_SPECIFIC=(
-    @development-tools
-    openssl-devel
-    jetbrains-mono-fonts
-    google-roboto-fonts
-    symbols-only-nerd-fonts
-    dnf-plugins-core
-)
-
-# Pacotes específico do Zypper (openSUSE)
-ZYPPER_SPECIFIC=(
-    -t pattern devel_basis
     libopenssl-devel
     jetbrains-mono-fonts
     google-roboto-fonts
     swww
+    -t pattern devel_basis
 )
 
-# Lista de módulos do Stow para aplicar
 STOW_MODULES=(
     zsh
     mise
@@ -49,7 +34,6 @@ STOW_MODULES=(
     scripts
 )
 
-# Lista de arquivos para limpar antes do Stow
 CLEANUP_LIST=(
     .config/antidote
     .zshrc
@@ -63,151 +47,100 @@ CLEANUP_LIST=(
 )
 
 CREATE_LIST=(
-    $HOME/Imagens/Wallpapers
-    $HOME/Imagens/Screenshots
-    $ZSH_COMPLETIONS_DIR
+    "$HOME/Imagens/Wallpapers"
+    "$HOME/Imagens/Screenshots"
+    "$ZSH_COMPLETIONS_DIR"
 )
 
-echo "Detectando sistema..."
-
-if command -v dnf &> /dev/null; then
-    PM="dnf"
-    FINAL_PACKAGES=("${PACKAGES[@]}" "${DNF_SPECIFIC[@]}")
-elif command -v zypper &> /dev/null; then
-    PM="zypper"
-    FINAL_PACKAGES=("${PACKAGES[@]}" "${ZYPPER_SPECIFIC[@]}")
-else
-    echo "Sistema não suportado (apenas Fedora ou openSUSE)."
-    exit 1
-fi
-
-# Função de verificação de existência do pacote atualizada
+# FUNÇÃO DE DETECÇÃO PARA ZYPPER
 is_installed() {
     local pkg=$1
-    
-    # Detecção específica para padrões do Zypper
-    if [[ "$PM" == "zypper" && "$pkg" == *"pattern"* ]]; then
-        local pattern_name="${pkg#*pattern }"
-        zypper search -i -t pattern "$pattern_name" &>/dev/null
+    if [[ "$pkg" == *"-t pattern"* ]]; then
+        local p_name="${pkg#*-t pattern }"
+        zypper search -i -t pattern "$p_name" &>/dev/null
         return $?
     fi
-
-    # Detecção para grupos do DNF
-    if [[ "$PM" == "dnf" && "$pkg" == "@"* ]]; then
-        dnf group list installed "${pkg#@}" &>/dev/null
-        return $?
-    fi
-
-    # Checagem padrão via RPM
     rpm -q "$pkg" &>/dev/null
 }
 
-echo "Verificando pacotes necessários via $PM..."
+echo "Iniciando setup para openSUSE..."
+
+# Verificação e Instalação
 MISSING_PACKAGES=()
-for pkg in "${FINAL_PACKAGES[@]}"; do
+for pkg in "${PACKAGES[@]}"; do
     if ! is_installed "$pkg"; then
         MISSING_PACKAGES+=("$pkg")
     fi
 done
 
 if [ ${#MISSING_PACKAGES[@]} -gt 0 ]; then
-    echo "Instalando pacotes ausentes: ${MISSING_PACKAGES[*]}"
-    if [ "$PM" == "dnf" ]; then
-        sudo dnf install -y "${MISSING_PACKAGES[@]}"
-        
-        # Instalação do swww via COPR no Fedora
-        sudo dnf copr enable -y solopasha/hyprland
-        sudo dnf install -y swww
-        
-        sudo update-ca-trust
-    elif [ "$PM" == "zypper" ]; then
-        sudo zypper install -y "${MISSING_PACKAGES[@]}"
-    fi
-    
-    if command -v fc-cache &> /dev/null; then
-        echo "Atualizando cache de fontes..."
-        fc-cache -fv
-    fi
+    echo "Instalando pacotes ausentes via Zypper: ${MISSING_PACKAGES[*]}"
+    sudo zypper install -y "${MISSING_PACKAGES[@]}"
+    [ -x "$(command -v fc-cache)" ] && fc-cache -fv
 else
     echo "Todos os pacotes base já estão instalados."
 fi
 
-echo "Limpando conflitos de arquivos antigos..."
-for item in "${CLEANUP_LIST[@]}"; do 
-    rm -rf "$HOME/$item"
-done
+# Limpeza e Pastas
+echo "Limpando conflitos e criando pastas..."
+for item in "${CLEANUP_LIST[@]}"; do rm -rf "$HOME/$item"; done
+for item in "${CREATE_LIST[@]}"; do mkdir -p "$item"; done
 
-echo "Criando pastas necessárias..."
-for item in "${CREATE_LIST[@]}"; do 
-    mkdir -p "$item"
-done
-
-# Instalação do Mise
+# Mise (Gerenciador de Runtime)
 if ! command -v mise &> /dev/null; then
     echo "Instalando Mise..."
     curl https://mise.run | sh
     export PATH="$HOME/.local/share/mise/bin:$HOME/.local/bin:$PATH"
 fi
+[ -d "$HOME/.local/share/mise/bin" ] && export PATH="$HOME/.local/share/mise/bin:$PATH"
+command -v mise &> /dev/null && mise completion zsh > "$ZSH_COMPLETIONS_DIR/_mise"
 
-if command -v mise &> /dev/null; then
-    mise completion zsh > "$ZSH_COMPLETIONS_DIR/_mise"
-fi
-
-# Antidote
+# Antidote (Zsh Plugins)
 if [ ! -d "$ANTIDOTE_DIR" ]; then
     echo "Instalando Antidote..."
     git clone --depth=1 https://github.com/mattmc3/antidote.git "$ANTIDOTE_DIR"
 fi
 
-if ! command -v cargo &> /dev/null || ! command -v matugen &> /dev/null; then
-    echo "Atenção: A instalação do Rust, Matugen e swww exige compilação."
-    read -p "Deseja continuar com a instalação agora? (s/N): " confirmacao
-fi
-
-if [[ "$confirmacao" =~ ^[Ss]$ ]]; then
+# Rust e Matugen (Compilação)
+if ! command -v matugen &> /dev/null; then
+    echo "Matugen não encontrado. Iniciando instalação do ambiente Rust..."
     if ! command -v cargo &> /dev/null; then
-        echo "Instalando Rust/Cargo..."
         curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --no-modify-path
-        source "$HOME/.cargo/env"
     fi
-
-    if ! command -v matugen &> /dev/null; then
-        echo "Instalando Matugen via Cargo..."
-        cargo install matugen
-    fi
+    source "$HOME/.cargo/env"
+    echo "Compilando Matugen (isso pode demorar)..."
+    cargo install matugen
 fi
 
-[ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
+source "$HOME/.cargo/env" 2>/dev/null
 
-echo "Provisionando ferramentas globais via Mise..."
-if ! mise install -y; then
-    mise self-update && mise install -y
+# Mise Provisioning
+echo "Instalando ferramentas do Mise..."
+mise install -y || (mise self-update && mise install -y)
+
+# Shell padrão
+[ "$(basename "$SHELL")" != "zsh" ] && sudo chsh -s "$(which zsh)" "$USER"
+
+# Wallpaper e Cores Iniciais
+echo "Configurando tema inicial..."
+WALL_PATH="$HOME/Imagens/Wallpapers/gargantua-black.jpg"
+if [ ! -f "$WALL_PATH" ]; then
+    curl -L -A "Mozilla/5.0" "https://4kwallpapers.com/images/wallpapers/gargantua-black-3840x2160-11475.jpg" -o "$WALL_PATH"
 fi
 
-if [ "$(basename "$SHELL")" != "zsh" ]; then
-    echo "Alterando shell padrão para zsh..."
-    sudo chsh -s "$(which zsh)" "$USER"
-fi
-
-echo "Configurando cores iniciais..."
-if [ -z "$(ls -A "$HOME/Imagens/Wallpapers")" ]; then
-    echo "Baixando wallpaper padrão..."
-    curl -L -A "Mozilla/5.0" "https://4kwallpapers.com/images/wallpapers/gargantua-black-3840x2160-11475.jpg" -o "$HOME/Imagens/Wallpapers/gargantua-black.jpg"
-fi
-
-if [ -f "$HOME/Imagens/Wallpapers/gargantua-black.jpg" ] && command -v matugen &> /dev/null; then
-    matugen image "$HOME/Imagens/Wallpapers/gargantua-black.jpg" > /dev/null 2>&1
+if command -v matugen &> /dev/null; then
+    matugen image "$WALL_PATH" > /dev/null 2>&1
 fi
 
 if command -v swww &> /dev/null; then
-    swww img "$HOME/Imagens/Wallpapers/gargantua-black.jpg" > /dev/null 2>&1 || true
+    swww-daemon & sleep 1
+    swww img "$WALL_PATH" --transition-type center > /dev/null 2>&1 || true
 fi
 
-echo "Aplicando módulos do Stow..."
+# Stow
+echo "Aplicando Dotfiles com Stow..."
 cd "$DOTFILES_DIR" || exit
-for module in "${STOW_MODULES[@]}"; do 
-    stow "$module"
-done
+for module in "${STOW_MODULES[@]}"; do stow "$module"; done
 
 export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
-echo "Setup concluído com sucesso!"
+echo "Setup openSUSE concluído com sucesso!"
