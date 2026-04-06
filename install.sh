@@ -81,11 +81,24 @@ else
     exit 1
 fi
 
-# Função de verificação de existência do pacote
+# Função de verificação de existência do pacote atualizada
 is_installed() {
     local pkg=$1
-    # Ignora padrões do zypper na checagem simples de RPM
-    [[ "$pkg" == "-t"* ]] && return 1
+    
+    # Detecção específica para padrões do Zypper
+    if [[ "$PM" == "zypper" && "$pkg" == *"pattern"* ]]; then
+        local pattern_name="${pkg#*pattern }"
+        zypper search -i -t pattern "$pattern_name" &>/dev/null
+        return $?
+    fi
+
+    # Detecção para grupos do DNF
+    if [[ "$PM" == "dnf" && "$pkg" == "@"* ]]; then
+        dnf group list installed "${pkg#@}" &>/dev/null
+        return $?
+    fi
+
+    # Checagem padrão via RPM
     rpm -q "$pkg" &>/dev/null
 }
 
