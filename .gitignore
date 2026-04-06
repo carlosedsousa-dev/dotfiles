@@ -1,5 +1,4 @@
 # Arquivos de configurações de cores gerados dinamicamente
-kitty/.config/kitty/colors.conf
-niri/.config/niri/config.d/colors.kdl
-waybar/.config/waybar/colors.css
-wofi/.config/wofi/colors.css
+**/colors.conf
+**/colors.kdl
+**/colors.css
