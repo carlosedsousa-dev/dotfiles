@@ -5,7 +5,6 @@ ANTIDOTE_DIR="${ZDOTDIR:-$HOME}/.antidote"
 ZSH_COMPLETIONS_DIR="$HOME/.zsh/completions"
 
 # Lista de pacotes para o Zypper
-# O padrão 'devel_basis' garante o linker (cc) e ferramentas de build
 PACKAGES=(
     zsh
     stow
@@ -19,6 +18,7 @@ PACKAGES=(
     libopenssl-devel
     jetbrains-mono-fonts
     google-roboto-fonts
+    symbols-only-nerd-fonts
     swww
     cargo
 )
