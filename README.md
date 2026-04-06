@@ -1,43 +1,62 @@
-# 🚀 Dotfiles: Core Architecture
+# 🚀 Dotfiles: Niri Architecture
 
-Um ecossistema automatizado para provisionamento de ambientes Unix-like, focado em produtividade e consistência através de diferentes distribuições Linux.
+Um ecossistema automatizado para provisionamento de ambientes Unix-like, focado em produtividade e consistência visual dinâmica, otimizado para o compositor Niri.
 
 ## 🛠️ Stack Tecnológica
 
 | Ferramenta | Função |
 | :--- | :--- |
-| **[Mise](https://mise.jdx.dev/)** | Polyglot runtime manager (alternativa moderna ao asdf). Gerencia versões de Node, Python, Go, etc. |
-| **[GNU Stow](https://www.gnu.org/software/stow/)** | Gerenciador de symlinks para arquivos de configuração (dotfiles). |
-| **[Antidote](https://getantidote.github.io/)** | Gerenciador de plugins Zsh ultra-rápido baseado em clones nativos. |
-| **[Eza](https://github.com/eza-community/eza)** | Substituto moderno e colorido para o comando `ls`. |
-| **Zsh** | Shell principal com integração de plugins e aliases otimizados. |
+| **[Niri](https://github.com/YaLTeR/niri)** | Compositor de janelas scroll-based (insensível a Tayloring tradicional). |
+| **[Matugen](https://github.com/InSync/Matugen)** | Gerador de cores baseado em Material You para extração dinâmica de temas. |
+| **[Mise](https://mise.jdx.dev/)** | Polyglot runtime manager. Gerencia versões de Node, Python, Rust e ferramentas CLI. |
+| **[GNU Stow](https://www.gnu.org/software/stow/)** | Gerenciador de symlinks para persistência e modularidade dos arquivos de configuração. |
+| **[Antidote](https://getantidote.github.io/)** | Gerenciador de plugins Zsh ultra-rápido baseado em carregamento estático. |
+| **[SWWW](https://github.com/L_S_D/swww)** | Wallpaper daemon com suporte a transições animadas e alta performance. |
 
-## 🌿 Estrutura de Branches
+## 🏗️ Fluxo de Provisionamento (Bootstrap)
 
-*   **`core` (Desktop/Dev):** Setup completo. Inclui gerenciadores de runtime (Mise), plugins visuais e ferramentas de desenvolvimento.
-*   **`server` (Minimal/SSH):** Versão enxuta. Focada em performance e estabilidade para ambientes de servidor, contendo apenas o essencial para navegação e edição.
+A arquitetura de instalação é projetada para ser executada em camadas, garantindo que o sistema base esteja pronto antes da configuração das aplicações.
 
-## ⚙️ Instalação Inteligente
+**System Layer**
+O script identifica o gerenciador de pacotes nativo (APT, DNF ou Zypper) e instala dependências de compilação, fontes e binários essenciais.
 
-O script `install.sh` opera com detecção dinâmica de ambiente e gerenciamento de estado:
+**Symlink Layer**
+O GNU Stow mapeia os módulos do repositório para o `$HOME`. Esta camada é idempotente e permite que alterações nos dotfiles sejam refletidas instantaneamente no sistema.
 
-1.  **Detecção de PM:** Suporte nativo para `APT` (Debian/Ubuntu), `DNF` (Fedora) e `Zypper` (OpenSUSE).
-2.  **Idempotência:** Antes de cada instalação, o script verifica via `dpkg` ou `rpm` se o pacote já existe, evitando chamadas desnecessárias ao sudo e consumo de banda.
-3.  **Bootstrap Automático:** Instala automaticamente o `Mise`, `Antidote` e `Stow` caso não estejam presentes.
-4.  **Gestão de Conflitos:** Limpa links simbólicos ou arquivos órfãos antes de aplicar os novos módulos via Stow.
-5.  **Provisionamento Global:** Após o setup base, o `Mise` provisiona todas as ferramentas definidas no `mise.toml`.
+**Runtime Layer**
+O Mise provisiona as linguagens de programação e ferramentas globais sem interferir no gerenciador de pacotes do sistema operacional.
 
-## 📂 Organização de Módulos
+**Theming Layer**
+O Matugen processa os templates de cores para Kitty, Waybar e Niri, criando uma identidade visual coesa baseada no wallpaper ativo.
 
-As configurações são organizadas em pastas compatíveis com o `Stow`:
+## 📦 Gestão de Módulos (Stow)
 
-*   `zsh/`: `.zshrc`, `.zsh_plugins.txt`, `.aliases.zsh`, `.bindkeys.zsh`.
-*   `mise/`: `.config/mise/mise.toml`.
+As configurações são segmentadas em unidades lógicas. Cada módulo pode ser aplicado independentemente:
 
-## ⚡ Produtividade (Aliases)
+* `zsh/`: Core do shell, plugins e definições de aliases.
+* `niri/`: Layout de janelas, binds de produtividade e regras de renderização.
+* `waybar/`: Interface de status bar com suporte a recarregamento via sinal USR1.
+* `kitty/`: Configurações de terminal com suporte a troca de cores em tempo real.
+* `scripts/`: Automações de sistema, incluindo o seletor de wallpaper e atualizador.
 
-Os aliases principais em `zsh/.aliases.zsh` incluem:
-*   `dot`: Navegação rápida para o diretório de dotfiles.
-*   `edot`: Edição rápida das configurações.
-*   `szsh`: Recarregamento instantâneo do contexto do shell.
-*   Workflow Git simplificado (status, commits, logs).
+## ⚡ Automação e Lifecycle
+
+O ambiente conta com scripts de manutenção para garantir a evolução do setup sem a necessidade de re-instalação:
+
+**install.sh**
+Script de primeiro uso. Limpa conflitos, instala o Rust/Cargo, provisiona o Matugen e aplica os links iniciais. Possui travas de segurança e confirmação para processos longos de compilação.
+
+**update.sh**
+Sincroniza o repositório local com o remoto, utiliza `stow -R` para atualizar os links simbólicos e atualiza os runtimes via Mise, mantendo o sistema em dia com um único comando.
+
+**select-wallpaper.sh**
+Integra Wofi, SWWW e Matugen. Altera o fundo de tela com transições suaves e dispara sinais `SIGUSR1` para que a interface atualize as cores via CSS sem fechar as aplicações ou causar flickers.
+
+## 🚀 Como Começar
+
+```bash
+git clone [https://github.com/seu-usuario/dotfiles.git](https://github.com/seu-usuario/dotfiles.git) ~/dotfiles
+cd ~/dotfiles
+chmod +x install.sh
+./install.sh
+```
