@@ -22,6 +22,7 @@ PACKAGES=(
 
 # Pacotes específico do APT
 APT_SPECIFIC=(
+    build-essential
     libssl-dev
     fonts-jetbrains-mono
     fonts-roboto
@@ -29,6 +30,7 @@ APT_SPECIFIC=(
 
 # Pacotes específico do DNF
 DNF_SPECIFIC=(
+    @development-tools
     openssl-devel
     jetbrains-mono-fonts
     google-roboto-fonts
@@ -37,6 +39,7 @@ DNF_SPECIFIC=(
 
 # Pacotes específico do Zypper
 ZYPPER_SPECIFIC=(
+    -t pattern devel_basis
     libopenssl-devel
     jetbrains-mono-fonts
     google-roboto-fonts
