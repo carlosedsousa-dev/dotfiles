@@ -4,25 +4,33 @@ DOTFILES_DIR="$HOME/dotfiles"
 ANTIDOTE_DIR="${ZDOTDIR:-$HOME}/.antidote"
 ZSH_COMPLETIONS_DIR="$HOME/.zsh/completions"
 
-# Lista de pacotes para o Zypper
+# Lista de pacotes para o Zypper (Organizados por seção)
 PACKAGES=(
+    # --- Ferramentas de Sistema ---
     zsh
     stow
     curl
     git
-    pavucontrol
-    kitty
-    wofi
     openssl
     ca-certificates
     libopenssl-devel
+
+    # --- Interface Gráfica (Niri/Wayland) ---
+    kitty
+    wofi
+    swww
+    pavucontrol
+
+    # --- Desenvolvimento e Build ---
+    cargo
+
+    # --- Fontes (Interface e Terminal) ---
     jetbrains-mono-fonts
     google-roboto-fonts
     symbols-only-nerd-fonts
-    swww
-    cargo
 )
 
+# Módulos do GNU Stow (pastas dentro de ~/dotfiles)
 STOW_MODULES=(
     zsh
     mise
@@ -130,5 +138,17 @@ echo "Aplicando Dotfiles com Stow..."
 cd "$DOTFILES_DIR" || exit
 for module in "${STOW_MODULES[@]}"; do stow "$module"; done
 
+# Path
 export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
+
 echo "Setup openSUSE concluído com sucesso!"
+
+# Pergunta sobre o reboot
+echo
+read -p "A instalação foi concluída. É recomendado reiniciar o sistema. Deseja reiniciar agora? (s/n): " resposta
+if [[ "$resposta" =~ ^[Ss]$ ]]; then
+    echo "Reiniciando..."
+    sudo reboot
+else
+    echo "Reinicialização cancelada. Lembre-se de reiniciar manualmente mais tarde para aplicar todas as mudanças."
+fi

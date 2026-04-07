@@ -8,7 +8,7 @@
 
 * {
     font-family: "JetBrainsMono Nerd Font", monospace;
-    font-size: 12px;
+    font-size: 14px; /* Aumentado de 12px para 14px */
     font-weight: bold;
     border: none;
 }
@@ -17,7 +17,7 @@ window#waybar {
     background-color: transparent;
 }
 
-/* Configuração de cada Ilha Separada */
+/* Configuração base para todas as Ilhas (Módulos) - TAMANHO AUMENTADO */
 #workspaces,
 #window,
 #clock,
@@ -29,31 +29,51 @@ window#waybar {
 #tray {
     background-color: @bg-island;
     border: 2px solid @border-island;
-    border-radius: 16px;
-    padding: 2px 12px;
+    border-radius: 16px; /* Aumentado de 12px para 16px */
+    padding: 4px 20px;  /* Aumentado para dar mais "presença" às ilhas */
     color: @text-main;
-    margin: 6px 2px; /* Adicionado um pequeno respiro entre ilhas */
+    margin: 6px 2px;    /* Reduzido o espaçamento entre ilhas */
 }
 
-/* Destaque para o Workspace ativo */
+/* Módulo de Workspaces */
+#workspaces button {
+    color: @accent-blue;
+    padding: 0 6px;
+}
+
 #workspaces button.focused {
     background-color: @focused-bg;
     color: @focused-text;
-    border-radius: 12px;
+    border-radius: 10px;
 }
 
-#workspaces button {
-    color: @accent-blue;
+/* Módulo de Janela */
+#window {
+    color: @text-main;
 }
 
-/* Cores das Ilhas de Hardware */
-#cpu { color: @accent-blue; }
-#memory { color: @accent-purple; }
-
+/* Módulo Central: Relógio */
 #clock {
     color: @clock-text;
 }
 
+/* Módulos da Direita: Sistema e Status */
+/* Padronização de cores: Todas em @accent-blue para evitar o rosa/púrpura */
+
+#cpu, 
+#memory,
+#pulseaudio, 
+#network,
+#battery { 
+    color: @accent-blue; 
+}
+
+#tray {
+    color: @text-main;
+}
+
+/* Esconder a ilha de janela quando estiver vazia */
 window#waybar.empty #window {
     background-color: transparent;
+    border: none;
 }

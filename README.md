@@ -18,7 +18,7 @@ Um ecossistema automatizado para provisionamento de ambientes Unix-like, focado 
 A arquitetura de instalação é projetada para ser executada em camadas, garantindo que o sistema base esteja pronto antes da configuração das aplicações.
 
 **System Layer**
-O script identifica o gerenciador de pacotes nativo (APT, DNF ou Zypper) e instala dependências de compilação, fontes e binários essenciais.
+O script identifica o gerenciador de pacotes nativo (Somente Zypper por enquanto) e instala dependências de compilação, fontes e binários essenciais.
 
 **Symlink Layer**
 O GNU Stow mapeia os módulos do repositório para o `$HOME`. Esta camada é idempotente e permite que alterações nos dotfiles sejam refletidas instantaneamente no sistema.
