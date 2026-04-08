@@ -49,7 +49,7 @@ window#waybar {
 
 /* Módulo de Janela */
 #window {
-    color: @text-main;
+    color: @accent-blue;
 }
 
 /* Módulo Central: Relógio */
