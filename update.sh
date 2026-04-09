@@ -13,7 +13,7 @@ git pull origin $(git branch --show-current)
 
 # Atualizar Módulos do Stow
 echo "Recriando links simbólicos (Restow)..."
-STOW_MODULES=(zsh mise niri waybar kitty wofi matugen scripts)
+STOW_MODULES=(zsh mise niri waybar kitty rofi matugen scripts)
 for module in "${STOW_MODULES[@]}"; do 
     stow -R "$module"
 done

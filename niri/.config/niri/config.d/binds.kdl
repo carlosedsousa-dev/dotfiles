@@ -5,11 +5,12 @@ binds {
 
     // Execução de programas básicos
     Mod+T { spawn "kitty"; }
-    Mod+D { spawn "wofi" "--show" "drun"; }
+    Mod+D { spawn "rofi" "-show" "drun" "-theme" "~/.config/rofi/launcher.rasi"; }
     Mod+B { spawn "brave-browser"; }
     Mod+E { spawn "thunar"; }
     Mod+Shift+M { spawn "power-menu.sh"; }
     Mod+Shift+W { spawn "select-wallpaper.sh"; }
+    Mod+Shift+V { spawn "clipboard-menu.sh"; }
     Super+Alt+L { spawn "swaylock"; }
 
     // Controles de volume (PipeWire)

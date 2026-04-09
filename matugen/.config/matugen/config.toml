@@ -14,9 +14,9 @@ output_path = "~/.config/kitty/colors.conf"
 input_path = "~/.config/matugen/templates/colors-waybar.css"
 output_path = "~/.config/waybar/colors.css"
 
-[templates.wofi]
-input_path = "~/.config/matugen/templates/colors-wofi.css"
-output_path = "~/.config/wofi/colors.css"
+[templates.rofi]
+input_path = "~/.config/matugen/templates/colors-rofi.rasi"
+output_path = "~/.config/rofi/colors.rasi"
 
 [templates.niri]
 input_path = "~/.config/matugen/templates/colors-niri.kdl"

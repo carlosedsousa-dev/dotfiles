@@ -2,3 +2,7 @@
 // Define os apps que sobem junto com o sistema
 spawn-at-startup "swww-daemon"
 spawn-at-startup "waybar"
+
+// Inicia o serviço de histórico de cópias (Clipboard Manager)
+spawn-at-startup "wl-paste" "--type" "text" "--watch" "cliphist" "store"
+spawn-at-startup "wl-paste" "--type" "image" "--watch" "cliphist" "store"

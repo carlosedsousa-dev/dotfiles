@@ -50,7 +50,7 @@ Script de primeiro uso. Limpa conflitos, instala o Rust/Cargo, provisiona o Matu
 Sincroniza o repositório local com o remoto, utiliza `stow -R` para atualizar os links simbólicos e atualiza os runtimes via Mise, mantendo o sistema em dia com um único comando.
 
 **select-wallpaper.sh**
-Integra Wofi, SWWW e Matugen. Altera o fundo de tela com transições suaves e dispara sinais `SIGUSR1` para que a interface atualize as cores via CSS sem fechar as aplicações ou causar flickers.
+Integra Rofi, SWWW e Matugen. Altera o fundo de tela com transições suaves e dispara sinais `SIGUSR1` para que a interface atualize as cores via CSS sem fechar as aplicações ou causar flickers.
 
 ## 🚀 Como Começar
 

@@ -17,9 +17,10 @@ PACKAGES=(
 
     # --- Interface Gráfica (Niri/Wayland) ---
     kitty
-    wofi
+    rofi
     swww
     pavucontrol
+    cliphist
 
     # --- Desenvolvimento e Build ---
     cargo
@@ -27,6 +28,8 @@ PACKAGES=(
     # --- Fontes (Interface e Terminal) ---
     jetbrains-mono-fonts
     google-roboto-fonts
+    iosevka-fonts
+    fontawesome-fonts
     symbols-only-nerd-fonts
 )
 
@@ -37,7 +40,7 @@ STOW_MODULES=(
     niri
     waybar
     kitty
-    wofi
+    rofi
     matugen
     scripts
 )
@@ -51,7 +54,7 @@ CLEANUP_LIST=(
     .config/kitty
     .config/niri/
     .config/waybar/
-    .config/wofi/
+    .config/rofi/
 )
 
 CREATE_LIST=(
