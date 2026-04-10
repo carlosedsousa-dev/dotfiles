@@ -1,5 +1,5 @@
 # Meus Bindkeys Personalizados
-# Localização original: ~/dotfiles/zsh/.bindkeys
+# Localização original: ~/dotfiles/zsh/.bindkeys.zsh
 
 # Carrega o suporte ao banco de dados de terminais
 zmodload zsh/terminfo

@@ -12,9 +12,12 @@ fi
 
 opcoes="  Desligar\n󰑐  Reiniciar\n󰤄  Suspender\n󰗼  Sair"
 
-# Usando o tema simplificado
+# Captura o uptime (formato amigável)
+uptime_info=$(uptime | awk -F'up|ligado por' '{print $2}' | awk -F',' '{print $1}' | sed 's/^ //g')
+
+# Usando o tema simplificado (estilização centralizada no powermenu.rasi)
 theme="$HOME/.config/rofi/powermenu.rasi"
-escolha=$(echo -e "$opcoes" | rofi -dmenu -p "Sistema" -theme "$theme")
+escolha=$(echo -e "$opcoes" | rofi -dmenu -p "Sistema" -mesg "Uptime: $uptime_info" -theme "$theme")
 
 case $escolha in
     *Desligar) systemctl poweroff ;;

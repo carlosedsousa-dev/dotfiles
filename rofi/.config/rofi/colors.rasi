@@ -1,8 +1,8 @@
 * {
-    main-bg:            rgba(16, 20, 24, 0.9);
-    main-fg:            #e1e2e8;
-    main-br:            #9fcafc;
-    input-bg:           rgba(23, 73, 116, 0.2);
-    select-bg:          rgba(159, 202, 252, 0.3);
-    select-fg:          #9fcafc;
+    main-bg:            rgba(20, 19, 24, 0.9);
+    main-fg:            #e6e1e9;
+    main-br:            #cabeff;
+    input-bg:           rgba(72, 63, 119, 0.2);
+    select-bg:          rgba(202, 190, 255, 0.3);
+    select-fg:          #cabeff;
 }

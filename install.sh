@@ -14,6 +14,8 @@ PACKAGES=(
     openssl
     ca-certificates
     libopenssl-devel
+    xdg-desktop-portal
+    xdg-desktop-portal-gtk
 
     # --- Interface Gráfica (Niri/Wayland) ---
     kitty
@@ -43,6 +45,7 @@ STOW_MODULES=(
     rofi
     matugen
     scripts
+    xdg-desktop-portal
 )
 
 CLEANUP_LIST=(

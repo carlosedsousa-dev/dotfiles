@@ -1,5 +1,5 @@
 # Meus Aliases Personalizados
-# Localização original: ~/dotfiles/zsh/.aliases
+# Localização original: ~/dotfiles/zsh/.aliases.zsh
 
 # Status e Adição
 alias gst='git status'

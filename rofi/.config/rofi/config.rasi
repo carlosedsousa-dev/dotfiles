@@ -9,6 +9,7 @@ configuration {
     window-format:              "{w} · {c} · {t}";
     font:                       "JetBrainsMono Nerd Font Bold 12";
     icon-theme:                 "Papirus";
+    scroll-method:              1;
     
     kb-mode-next:               "Shift+Right,Control+Tab";
     kb-mode-previous:           "Shift+Left,Control+Shift+Tab";
@@ -70,7 +71,7 @@ entry {
 listview {
     enabled:                      true;
     columns:                      1;
-    lines:                        8;
+    lines:                        10;
     cycle:                        true;
     dynamic:                      true;
     scrollbar:                    false;

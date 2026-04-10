@@ -9,6 +9,7 @@ configuration {
     drun-display-format:        "{name}";
     window-format:              "{w} · {c} · {t}";
     font:                       "JetBrainsMono Nerd Font Bold 12";
+    scroll-method:              1;
 
     kb-mode-next:               "Shift+Right,Control+Tab";
     kb-mode-previous:           "Shift+Left,Control+Shift+Tab";
@@ -74,33 +75,32 @@ mainbox {
 /*****----- Inputbar -----*****/
 inputbar {
     enabled:                     true;
-    spacing:                     10px;
+    spacing:                     15px;
     margin:                      0px 0px 10px 0px;
-    padding:                     12px 15px;
-    border:                      0px;
-    border-radius:               12px;
-    background-color:            @alternate-background;
+    padding:                     0px;
+    background-color:            transparent;
     text-color:                  @foreground-colour;
     children:                    [ "textbox-prompt-colon", "entry" ];
 }
 
-prompt {
-    enabled:                     true;
-    background-color:            inherit;
-    text-color:                  inherit;
-}
 textbox-prompt-colon {
     enabled:                     true;
-    padding:                     5px 0px;
     expand:                      false;
     str:                         "";
-    background-color:            inherit;
+    padding:                     12px 18px;
+    border:                      2px;
+    border-color:                @border-colour;
+    border-radius:               16px;
+    background-color:            @alternate-background;
     text-color:                  inherit;
 }
 entry {
     enabled:                     true;
-    padding:                     5px 0px;
-    background-color:            inherit;
+    padding:                     12px 15px;
+    border:                      2px;
+    border-color:                @border-colour;
+    border-radius:               16px;
+    background-color:            @alternate-background;
     text-color:                  inherit;
     cursor:                      text;
     placeholder:                 "Search...";
@@ -117,7 +117,7 @@ listview {
     scrollbar:                   false;
     layout:                      vertical;
     reverse:                     false;
-    fixed-height:                true;
+    fixed-height:                false;
     fixed-columns:               true;
     spacing:                     5px;
     margin:                      0px;
@@ -147,7 +147,7 @@ element normal.normal {
 element selected.normal {
     background-color:            @selected-normal-background;
     text-color:                  @selected-normal-foreground;
-    border:                      1px;
+    border:                      2px;
     border-color:                @border-colour;
 }
 element-icon {
@@ -186,6 +186,6 @@ button {
 button selected {
     background-color:            @selected-normal-background;
     text-color:                  @selected-normal-foreground;
-    border:                      1px;
+    border:                      2px;
     border-color:                @border-colour;
 }

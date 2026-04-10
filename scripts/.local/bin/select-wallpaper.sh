@@ -33,13 +33,13 @@ gerar_lista() {
     done
 }
 
-# Seleção via Rofi - Grid centralizado e justo
+# Seleção via Rofi - Grid centralizado e justo (estilo visual centralizado no launcher.rasi)
 escolha=$(gerar_lista | rofi -dmenu -p "" -theme "$HOME/.config/rofi/launcher.rasi" \
-    -theme-str 'window { width: 630px; height: 400px; } 
+    -theme-str 'window { width: 630px; height: 500px; } 
                 mainbox { padding: 15px; children: [ "inputbar", "listview" ]; }
                 mode-switcher { enabled: false; }
-                listview { columns: 2; lines: 2; spacing: 15px; fixed-height: true; } 
-                element { padding: 0px; margin: 0px; border-radius: 12px; children: [ "element-icon" ]; } 
+                listview { columns: 2; lines: 3; spacing: 15px; fixed-height: false; dynamic: true; scrollbar: false; } 
+                element { children: [ "element-icon" ]; padding: 8px; } 
                 element-icon { size: 280px; border-radius: 12px; horizontal-align: 0.5; vertical-align: 0.5; expand: true; } 
                 element-text { enabled: false; }')
 
