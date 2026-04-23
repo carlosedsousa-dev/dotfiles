@@ -3,7 +3,7 @@ WALL_DIR="$HOME/Imagens/Wallpapers"
 THUMB_DIR="/tmp/wallpaper_thumbs"
 mkdir -p "$THUMB_DIR"
 
-# Garante que o script encontre o matugen, swww e outros binários do cargo/local
+# Garante que o script encontre o matugen, awww e outros binários do cargo/local
 export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
 
 # Garante apenas uma instância da seleção de wallpaper (compartilhado com power-menu.sh)
@@ -48,7 +48,7 @@ if [ -n "$escolha" ]; then
     WALLPATH="$WALL_DIR/$escolha"
 
     # Inicia a transição do wallpaper
-    swww img "$WALLPATH" --transition-type center --transition-step 60 --transition-fps 60 &
+    awww img "$WALLPATH" --transition-type center --transition-step 60 --transition-fps 60 &
 
     # Gera as cores com o Matugen
     matugen image "$WALLPATH" > /dev/null 2>&1

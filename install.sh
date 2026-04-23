@@ -20,7 +20,7 @@ PACKAGES=(
     # --- Interface Gráfica (Niri/Wayland) ---
     kitty
     rofi
-    swww
+    awww
     pavucontrol
     cliphist
 
