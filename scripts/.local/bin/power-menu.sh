@@ -3,7 +3,7 @@
 # Garante que o script encontre o matugen, swww e outros binários do cargo/local
 export PATH="$HOME/.cargo/bin:$HOME/.local/bin:$PATH"
 
-# Garante apenas uma instância do menu (compartilhado com select-wallpaper.sh)
+# Garante apenas uma instância do menu
 LOCKFILE="/tmp/modal-menu.lock"
 exec 9>"$LOCKFILE"
 if ! flock -n 9; then

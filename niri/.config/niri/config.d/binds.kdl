@@ -8,9 +8,9 @@ binds {
     Mod+D { spawn "rofi" "-show" "drun" "-theme" "~/.config/rofi/launcher.rasi" "-filebrowser-directory" "/home/carlos/dotfiles"; }
     Mod+B { spawn "brave-browser"; }
     Mod+E { spawn "nemo"; }
-    Mod+Shift+M { spawn "power-menu.sh"; }
-    Mod+Shift+W { spawn "select-wallpaper.sh"; }
-    Mod+Shift+V { spawn "clipboard-menu.sh"; }
+    Mod+M { spawn "power-menu.sh"; }
+    Mod+W { spawn "select-wallpaper.sh"; }
+    Mod+V { spawn "rofi" "-show" "text" "-modi" "text:/home/carlos/.local/bin/clipboard-menu.sh text,img:/home/carlos/.local/bin/clipboard-menu.sh img" "-theme" "~/.config/rofi/clipboard.rasi"; }
     Super+Alt+L { spawn "swaylock"; }
 
     // Controles de volume (PipeWire)
@@ -35,7 +35,7 @@ binds {
     Mod+F { maximize-column; }
     Mod+Shift+F { fullscreen-window; }
     Mod+C { center-column; }
-    Mod+V { toggle-window-floating; }
+    Mod+Shift+V { toggle-window-floating; }
 
     // Movimentação do foco
     Mod+Left  { focus-column-left; }
@@ -71,7 +71,7 @@ binds {
     Mod+BracketLeft  { consume-or-expel-window-left; }
     Mod+BracketRight { consume-or-expel-window-right; }
     // Alterna a visualização da coluna para abas (estilo navegador)
-    Mod+W { toggle-column-tabbed-display; }
+    Mod+Shift+W { toggle-column-tabbed-display; }
 
     // Redimensionamento manual
     Mod+R { switch-preset-column-width; }
