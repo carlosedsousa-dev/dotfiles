@@ -1,0 +1,9 @@
+layout {
+    focus-ring {
+        width 4
+        // Cor principal do wallpaper com alpha (CC = ~80%)
+        active-color "#cabeffCC"
+        // Cor de fundo/superfície com alpha (80 = ~50%)
+        inactive-color "#14131880"
+    }
+}
