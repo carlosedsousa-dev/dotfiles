@@ -1,0 +1,137 @@
+/*****----- Configuration -----*****/
+configuration {
+    show-icons:                 true;
+    display-drun:               "";
+    font:                       "JetBrainsMono Nerd Font Bold 12";
+}
+
+/*****----- Global Properties -----*****/
+@import "colors.rasi"
+
+* {
+    border-colour:               @main-br;
+    background-colour:           @main-bg;
+    foreground-colour:           @main-fg;
+    alternate-background:        @input-bg;
+    selected-normal-background:  @select-bg;
+    selected-normal-foreground:  @select-fg;
+}
+
+/*****----- Main Window -----*****/
+window {
+    transparency:                "real";
+    location:                    center;
+    anchor:                      center;
+    fullscreen:                  false;
+    width:                       630px;
+    height:                      500px;
+    enabled:                     true;
+    margin:                      0px;
+    padding:                     0px;
+    border:                      2px;
+    border-radius:               16px;
+    border-color:                @border-colour;
+    cursor:                      "default";
+    background-color:            @background-colour;
+}
+
+/*****----- Main Box -----*****/
+mainbox {
+    enabled:                     true;
+    spacing:                     0px;
+    margin:                      0px;
+    padding:                     15px;
+    background-color:            transparent;
+    children:                    [ "inputbar", "listview" ];
+}
+
+/*****----- Inputbar -----*****/
+inputbar {
+    enabled:                     true;
+    spacing:                     15px;
+    margin:                      0px 0px 10px 0px;
+    padding:                     0px;
+    background-color:            transparent;
+    text-color:                  @foreground-colour;
+    children:                    [ "textbox-prompt-colon", "entry" ];
+}
+
+textbox-prompt-colon {
+    enabled:                     true;
+    expand:                      false;
+    str:                         "";
+    padding:                     12px 18px;
+    border:                      2px;
+    border-color:                @border-colour;
+    border-radius:               16px;
+    background-color:            @alternate-background;
+    text-color:                  inherit;
+}
+entry {
+    enabled:                     true;
+    padding:                     12px 15px;
+    border:                      2px;
+    border-color:                @border-colour;
+    border-radius:               16px;
+    background-color:            @alternate-background;
+    text-color:                  inherit;
+    cursor:                      text;
+    placeholder:                 "Search Wallpaper...";
+    placeholder-color:           inherit;
+}
+
+/*****----- Listview -----*****/
+listview {
+    enabled:                     true;
+    columns:                     2;
+    lines:                       3;
+    cycle:                       true;
+    dynamic:                     true;
+    scrollbar:                   false;
+    layout:                      vertical;
+    reverse:                     false;
+    fixed-height:                false;
+    fixed-columns:               true;
+    spacing:                     15px;
+    margin:                      0px;
+    padding:                     10px;
+    background-color:            transparent;
+    text-color:                  @foreground-colour;
+    cursor:                      "default";
+}
+
+/*****----- Elements -----*****/
+element {
+    enabled:                     true;
+    spacing:                     0px;
+    margin:                      0px;
+    padding:                     8px;
+    border:                      0px;
+    border-radius:               12px;
+    background-color:            transparent;
+    text-color:                  @foreground-colour;
+    cursor:                      pointer;
+    children:                    [ "element-icon" ];
+}
+
+element selected.normal {
+    background-color:            @selected-normal-background;
+    text-color:                  @selected-normal-foreground;
+    border:                      2px;
+    border-color:                @border-colour;
+}
+
+element-icon {
+    background-color:            transparent;
+    text-color:                  inherit;
+    size:                        280px;
+    cursor:                      inherit;
+    border-radius:               12px;
+    horizontal-align:            0.5;
+    vertical-align:              0.5;
+    expand:                      true;
+}
+
+element-text {
+    enabled:                     false;
+}
