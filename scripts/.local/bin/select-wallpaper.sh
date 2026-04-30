@@ -19,12 +19,12 @@ gerar_lista() {
         nome=$(basename "$img")
         thumb="$THUMB_DIR/${nome}.png"
         
-        # Gera miniatura se não existir (280x150 para um grid 2x2 perfeito)
+        # Gera miniatura se não existir (240x150 para um grid 3x3 perfeito)
         if [ ! -f "$thumb" ]; then
             if command -v magick &> /dev/null; then
-                magick "$img" -strip -resize 280x150^ -gravity center -extent 280x150 "$thumb" 2>/dev/null
+                magick "$img" -strip -resize 240x150^ -gravity center -extent 240x150 "$thumb" 2>/dev/null
             elif command -v convert &> /dev/null; then
-                convert "$img" -strip -resize 280x150^ -gravity center -extent 280x150 "$thumb" 2>/dev/null
+                convert "$img" -strip -resize 240x150^ -gravity center -extent 240x150 "$thumb" 2>/dev/null
             fi
         fi
         

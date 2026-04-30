@@ -23,8 +23,8 @@ window {
     location:                    center;
     anchor:                      center;
     fullscreen:                  false;
-    width:                       630px;
-    height:                      500px;
+    width:                       900px;
+    height:                      650px;
     enabled:                     true;
     margin:                      0px;
     padding:                     0px;
@@ -40,7 +40,7 @@ mainbox {
     enabled:                     true;
     spacing:                     0px;
     margin:                      0px;
-    padding:                     15px;
+    padding:                     10px;
     background-color:            transparent;
     children:                    [ "inputbar", "listview" ];
 }
@@ -49,7 +49,7 @@ mainbox {
 inputbar {
     enabled:                     true;
     spacing:                     15px;
-    margin:                      0px 0px 10px 0px;
+    margin:                      0px 0px 5px 0px;
     padding:                     0px;
     background-color:            transparent;
     text-color:                  @foreground-colour;
@@ -83,18 +83,18 @@ entry {
 /*****----- Listview -----*****/
 listview {
     enabled:                     true;
-    columns:                     2;
+    columns:                     3;
     lines:                       3;
     cycle:                       true;
     dynamic:                     true;
     scrollbar:                   false;
     layout:                      vertical;
     reverse:                     false;
-    fixed-height:                false;
+    fixed-height:                true;
     fixed-columns:               true;
-    spacing:                     15px;
+    spacing:                     5px;
     margin:                      0px;
-    padding:                     10px;
+    padding:                     5px;
     background-color:            transparent;
     text-color:                  @foreground-colour;
     cursor:                      "default";
@@ -103,9 +103,10 @@ listview {
 /*****----- Elements -----*****/
 element {
     enabled:                     true;
+    orientation:                 vertical;
     spacing:                     0px;
     margin:                      0px;
-    padding:                     8px;
+    padding:                     4px;
     border:                      0px;
     border-radius:               12px;
     background-color:            transparent;
@@ -124,7 +125,7 @@ element selected.normal {
 element-icon {
     background-color:            transparent;
     text-color:                  inherit;
-    size:                        280px;
+    size:                        240px;
     cursor:                      inherit;
     border-radius:               12px;
     horizontal-align:            0.5;
