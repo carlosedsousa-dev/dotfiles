@@ -1,0 +1,123 @@
+/*****----- Configuration -----*****/
+configuration {
+    show-icons:                 true;
+    display-img:                "󰋩 Imagens";
+    font:                       "JetBrainsMono Nerd Font Bold 12";
+    scroll-method:              1;
+}
+
+/*****----- Global Properties -----*****/
+@import "colors.rasi"
+
+* {
+    border-colour:               @main-br;
+    background-colour:           @main-bg;
+    foreground-colour:           @main-fg;
+    alternate-background:        @input-bg;
+    selected-normal-background:  @select-bg;
+    selected-normal-foreground:  @select-fg;
+}
+
+/*****----- Main Window -----*****/
+window {
+    transparency:                "real";
+    location:                    center;
+    anchor:                      center;
+    fullscreen:                  false;
+    width:                       350px;
+    height:                      600px;
+    enabled:                     true;
+    border:                      2px;
+    border-radius:               16px;
+    border-color:                @border-colour;
+    background-color:            @background-colour;
+}
+
+/*****----- Main Box -----*****/
+mainbox {
+    enabled:                     true;
+    spacing:                     10px;
+    padding:                     20px;
+    background-color:            transparent;
+    children:                    [ "inputbar", "listview" ];
+}
+
+/*****----- Inputbar -----*****/
+inputbar {
+    enabled:                     true;
+    spacing:                     15px;
+    margin:                      0px 0px 10px 0px;
+    background-color:            transparent;
+    text-color:                  @foreground-colour;
+    children:                    [ "textbox-prompt-colon", "entry" ];
+}
+
+textbox-prompt-colon {
+    enabled:                     true;
+    expand:                      false;
+    str:                         "󰋩";
+    padding:                     12px 18px;
+    border:                      2px;
+    border-color:                @border-colour;
+    border-radius:               16px;
+    background-color:            @alternate-background;
+    text-color:                  inherit;
+}
+
+entry {
+    enabled:                     true;
+    padding:                     12px 15px;
+    border:                      2px;
+    border-color:                @border-colour;
+    border-radius:               16px;
+    background-color:            @alternate-background;
+    text-color:                  inherit;
+    placeholder:                 "Pesquise...";
+    placeholder-color:           inherit;
+}
+
+/*****----- Listview -----*****/
+listview {
+    enabled:                     true;
+    columns:                     1;
+    lines:                       2;
+    cycle:                       true;
+    dynamic:                     true;
+    scrollbar:                   false;
+    layout:                      vertical;
+    spacing:                     10px;
+    padding:                     0px;
+    background-color:            transparent;
+    text-color:                  @foreground-colour;
+}
+
+/*****----- Elements -----*****/
+element {
+    enabled:                     true;
+    orientation:                 vertical;
+    spacing:                     0px;
+    padding:                     2px;
+    border-radius:               12px;
+    background-color:            transparent;
+    text-color:                  @foreground-colour;
+    children:                    [ "element-icon" ];
+}
+
+element selected.normal {
+    background-color:            @selected-normal-background;
+    text-color:                  @selected-normal-foreground;
+    border:                      2px;
+    border-color:                @border-colour;
+}
+
+element-icon {
+    background-color:            transparent;
+    size:                        220px;
+    horizontal-align:            0.5;
+    vertical-align:              0.5;
+    border-radius:               12px;
+}
+
+element-text {
+    enabled:                     false;
+}

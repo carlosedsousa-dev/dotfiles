@@ -10,7 +10,7 @@ binds {
     Mod+E { spawn "nemo"; }
     Mod+M { spawn "power-menu.sh"; }
     Mod+W { spawn "select-wallpaper.sh"; }
-    Mod+V { spawn "rofi" "-show" "text" "-modi" "text:/home/carlos/.local/bin/clipboard-menu.sh text,img:/home/carlos/.local/bin/clipboard-menu.sh img" "-theme" "~/.config/rofi/clipboard.rasi"; }
+    Mod+V { spawn "clipboard-dispatcher.sh"; }
     Super+Alt+L { spawn "swaylock"; }
 
     // Controles de volume (PipeWire)
