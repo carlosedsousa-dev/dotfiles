@@ -23,8 +23,8 @@ window {
     location:                    center;
     anchor:                      center;
     fullscreen:                  false;
-    width:                       900px;
-    height:                      650px;
+    width:                       1100px;
+    height:                      450px; /* Aumentado para evitar estouro de layout */
     enabled:                     true;
     margin:                      0px;
     padding:                     0px;
@@ -38,9 +38,9 @@ window {
 /*****----- Main Box -----*****/
 mainbox {
     enabled:                     true;
-    spacing:                     0px;
+    spacing:                     10px;
     margin:                      0px;
-    padding:                     10px;
+    padding:                     20px;
     background-color:            transparent;
     children:                    [ "inputbar", "listview" ];
 }
@@ -49,7 +49,7 @@ mainbox {
 inputbar {
     enabled:                     true;
     spacing:                     15px;
-    margin:                      0px 0px 5px 0px;
+    margin:                      0px 0px 10px 0px;
     padding:                     0px;
     background-color:            transparent;
     text-color:                  @foreground-colour;
@@ -84,7 +84,7 @@ entry {
 listview {
     enabled:                     true;
     columns:                     3;
-    lines:                       3;
+    lines:                       1;
     cycle:                       true;
     dynamic:                     true;
     scrollbar:                   false;
@@ -92,9 +92,9 @@ listview {
     reverse:                     false;
     fixed-height:                true;
     fixed-columns:               true;
-    spacing:                     5px;
+    spacing:                     20px;
     margin:                      0px;
-    padding:                     5px;
+    padding:                     10px;
     background-color:            transparent;
     text-color:                  @foreground-colour;
     cursor:                      "default";
@@ -106,7 +106,7 @@ element {
     orientation:                 vertical;
     spacing:                     0px;
     margin:                      0px;
-    padding:                     4px;
+    padding:                     5px; /* Ajustado para um meio termo seguro */
     border:                      0px;
     border-radius:               12px;
     background-color:            transparent;
@@ -125,7 +125,7 @@ element selected.normal {
 element-icon {
     background-color:            transparent;
     text-color:                  inherit;
-    size:                        240px;
+    size:                        300px; /* Tamanho seguro que preenche bem sem quebrar */
     cursor:                      inherit;
     border-radius:               12px;
     horizontal-align:            0.5;
