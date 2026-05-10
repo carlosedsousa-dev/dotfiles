@@ -3,12 +3,6 @@ HISTFILE=~/.histfile
 HISTSIZE=1000
 SAVEHIST=1000
 
-# Ativar o Mise-en-place
-# O comando 'activate' configura o PATH e hooks do shell automaticamente
-if [ -f "$HOME/.local/bin/mise" ]; then
-    eval "$($HOME/.local/bin/mise activate zsh)"
-fi
-
 # Compinit (Autocomplete)
 autoload -Uz compinit
 compinit
