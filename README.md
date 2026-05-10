@@ -10,6 +10,7 @@ Este repositório possui duas branches principais para atender diferentes cenár
 
 * **`core` (Desktop):** Setup completo com todas as ferramentas de desenvolvimento, além de conter tudo do server.
 * **`server` (Minimal):** Versão enxuta focada em performance e estabilidade para servidores, contendo apenas o essencial.
+* **`niri` (Wayland Desktop):** Configuração otimizada para o compositor Niri.
 
 ## 🚀 Instalação
 
@@ -18,6 +19,13 @@ Para configurar seu ambiente, escolha a branch e rode o script:
 ### No Desktop (Perfil Completo)
 ```bash
 git clone -b core https://github.com/carlosedsousa-dev/dotfiles.git ~/dotfiles
+cd ~/dotfiles
+./install.sh
+```
+
+### No Desktop (Compositor Niri)
+```bash
+git clone -b niri https://github.com/carlosedsousa-dev/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 ./install.sh
 ```
