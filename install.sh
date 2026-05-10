@@ -42,8 +42,13 @@ fi
 # Função de verificação de existência do pacote (idempotência)
 is_installed() {
     local pkg=$1
+    # Verifica se o comando existe no PATH primeiro
+    if command -v "$pkg" &>/dev/null; then
+        return 0
+    fi
+    # Se não está no PATH, verifica no gerenciador de pacotes
     case "$PM" in
-        pkg) pkg list-installed "$pkg" &>/dev/null ;;
+        pkg) dpkg -s "$pkg" &>/dev/null ;;
         apt) dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -q "ok installed" ;;
         dnf|zypper) rpm -q "$pkg" &>/dev/null ;;
     esac
