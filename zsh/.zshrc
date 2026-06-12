@@ -1,45 +1,51 @@
-# Histórico e Fpath
-HISTFILE=~/.histfile
-HISTSIZE=1000
-SAVEHIST=1000
+HISTFILE=~/.zsh_history
+HISTSIZE=50000
+SAVEHIST=50000
+setopt INTERACTIVE_COMMENTS
+
 fpath=(~/.zsh/completions $fpath)
 
-# Antidote com Cache Estático
-# Carrega instantaneamente se o cache existir e estiver atualizado
 _antidote_dir=${ZDOTDIR:-$HOME}/.antidote
 _antidote_plugins_txt=${ZDOTDIR:-$HOME}/.zsh_plugins.txt
 _antidote_static=${ZDOTDIR:-$HOME}/.zsh_plugins.zsh
 
-source $_antidote_dir/antidote.zsh
-
 if [[ ! -f $_antidote_static || $_antidote_plugins_txt -nt $_antidote_static ]]; then
-  antidote bundle < $_antidote_plugins_txt > $_antidote_static
+    source $_antidote_dir/antidote.zsh
+    antidote bundle < $_antidote_plugins_txt > $_antidote_static
+    zcompile $_antidote_static
 fi
 source $_antidote_static
 
-# Lazy Load para o Compinit
-# Ativa apenas no primeiro Tab
 autoload -Uz compinit
 compinit_lazy() {
     unfunction compinit_lazy
-    compinit
+    if [[ -n ${ZDOTDIR:-$HOME}/.zcompdump(#qN.m-1) ]]; then
+        compinit -C
+    else
+        compinit
+    fi
+    zle expand-or-complete
 }
 zle -N expand-or-complete compinit_lazy
 
-# Carregamento Diferido para o Mise
-# Ativa hooks após o prompt sem travar o startup
-load_mise() {
-    if command -v mise &> /dev/null; then
-        eval "$(mise activate zsh)"
-    fi
-    add-zsh-hook -d precmd load_mise
-}
-autoload -Uz add-zsh-hook
-add-zsh-hook precmd load_mise
+if [[ -d "$HOME/.local/share/mise/shims" ]]; then
+    export PATH="$HOME/.local/share/mise/shims:$PATH"
+else
+    load_mise() {
+        if command -v mise &> /dev/null; then
+            eval "$(mise activate zsh)"
+        fi
+        add-zsh-hook -d precmd load_mise
+    }
+    autoload -Uz add-zsh-hook
+    add-zsh-hook precmd load_mise
+fi
 
-# Path
 export PATH="$HOME/.local/share/mise/bin:$HOME/.local/bin:$PATH"
 
-# Arquivos extras
-[[ -f ~/.bindkeys.zsh ]] && source ~/.bindkeys.zsh
-[[ -f ~/.aliases.zsh ]] && source ~/.aliases.zsh
+for ext_file in ~/.bindkeys.zsh ~/.aliases.zsh; do
+    if [[ -f $ext_file ]]; then
+        [[ ! -f ${ext_file}.zwc || $ext_file -nt ${ext_file}.zwc ]] && zcompile $ext_file
+        source $ext_file
+    fi
+done
