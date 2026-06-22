@@ -41,11 +41,12 @@ else
     add-zsh-hook precmd load_mise
 fi
 
-export PATH="$HOME/.local/share/mise/bin:$HOME/.local/bin:$PATH"
-
 for ext_file in ~/.bindkeys.zsh ~/.aliases.zsh; do
     if [[ -f $ext_file ]]; then
         [[ ! -f ${ext_file}.zwc || $ext_file -nt ${ext_file}.zwc ]] && zcompile $ext_file
         source $ext_file
     fi
 done
+
+# Path
+export PATH="$HOME/.opencode/bin:$HOME/.local/share/mise/bin:$HOME/.local/bin:$PATH"
