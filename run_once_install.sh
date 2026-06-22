@@ -1,0 +1,129 @@
+#!/bin/bash
+
+CHEZMOI_SOURCE_DIR="${CHEZMOI_SOURCE_DIR:-$HOME/.local/share/chezmoi}"
+ANTIDOTE_DIR="${ZDOTDIR:-$HOME}/.antidote"
+ZSH_COMPLETIONS_DIR="$HOME/.zsh/completions"
+
+# Configuração de Listas (Modularidade)
+# Pacotes universais
+PACKAGES=(
+    zsh
+    curl
+    git
+
+    # Adição de compatibilidades com tipos de chaves SSH usadas pelo Mise
+    openssl
+    ca-certificates
+
+    # Substituto moderno para o ls
+    eza
+)
+
+# Pacotes específico do APT
+APT_SPECIFIC=(
+    libssl-dev
+)
+
+# Pacotes específico do DNF
+DNF_SPECIFIC=(
+    openssl-devel
+)
+
+# Pacotes específico do Zypper
+ZYPPER_SPECIFIC=(
+    libopenssl-devel
+)
+
+# Chezmoi gerencia os dotfiles automaticamente com `chezmoi apply`
+
+echo "Detectando sistema..."
+
+if [ -n "$TERMUX_VERSION" ] || command -v pkg &> /dev/null; then
+    PM="pkg"
+    FINAL_PACKAGES=("${PACKAGES[@]}")
+elif command -v apt-get &> /dev/null; then
+    PM="apt"
+    FINAL_PACKAGES=("${PACKAGES[@]}" "${APT_SPECIFIC[@]}")
+elif command -v dnf &> /dev/null; then
+    PM="dnf"
+    FINAL_PACKAGES=("${PACKAGES[@]}" "${DNF_SPECIFIC[@]}")
+elif command -v zypper &> /dev/null; then
+    PM="zypper"
+    FINAL_PACKAGES=("${PACKAGES[@]}" "${ZYPPER_SPECIFIC[@]}")
+fi
+
+# Função de verificação de existência do pacote
+is_installed() {
+    local pkg=$1
+    case "$PM" in
+        pkg) pkg list-installed "$pkg" &>/dev/null ;;
+        apt) dpkg-query -W -f='${Status}' "$pkg" 2>/dev/null | grep -q "ok installed" ;;
+        dnf|zypper) rpm -q "$pkg" &>/dev/null ;;
+    esac
+}
+
+echo "Verificando pacotes necessários via $PM..."
+MISSING_PACKAGES=()
+for pkg in "${FINAL_PACKAGES[@]}"; do
+    if ! is_installed "$pkg"; then
+        MISSING_PACKAGES+=("$pkg")
+    fi
+done
+
+if [ ${#MISSING_PACKAGES[@]} -gt 0 ]; then
+    echo "Instalando pacotes ausentes: ${MISSING_PACKAGES[*]}"
+    if [ "$PM" == "pkg" ]; then
+        pkg update && pkg install -y "${MISSING_PACKAGES[@]}"
+    elif [ "$PM" == "apt" ]; then
+        sudo apt-get update -y && sudo apt-get install -y "${MISSING_PACKAGES[@]}"
+        sudo update-ca-certificates
+    elif [ "$PM" == "dnf" ]; then
+        sudo dnf install -y "${MISSING_PACKAGES[@]}"
+        sudo update-ca-trust
+    elif [ "$PM" == "zypper" ]; then
+        sudo zypper install -y "${MISSING_PACKAGES[@]}"
+    fi
+else
+    echo "Todos os pacotes base já estão instalados."
+fi
+
+# Instalação do Mise (Gerenciador de Runtime)
+if ! command -v mise &> /dev/null; then
+    echo "Instalando Mise..."
+    curl https://mise.run | sh
+    export PATH="$HOME/.local/share/mise/bin:$HOME/.local/bin:$PATH"
+fi
+
+# Autocomplete
+mkdir -p "$ZSH_COMPLETIONS_DIR"
+if command -v mise &> /dev/null; then
+    mise completion zsh > "$ZSH_COMPLETIONS_DIR/_mise"
+fi
+
+# Antidote (Gerenciador de Plugins Zsh)
+if [ ! -d "$ANTIDOTE_DIR" ]; then
+    echo "Instalando Antidote..."
+    git clone --depth=1 https://github.com/mattmc3/antidote.git "$ANTIDOTE_DIR"
+fi
+
+echo "Aplicando dotfiles via Chezmoi..."
+chezmoi apply
+
+# Instalação de Ferramentas via Mise (conforme mise.toml)
+echo "Provisionando ferramentas globais via Mise..."
+if ! mise install -y; then
+    echo "Erro de verificação detectado. Tentando self-update..."
+    mise self-update && mise install -y
+fi
+
+# Troca de Shell para Zsh
+if [ "$(basename "$SHELL")" != "zsh" ]; then
+    echo "Alterando shell padrão para zsh..."
+    if [ "$PM" == "pkg" ]; then
+        chsh -s zsh
+    else
+        sudo chsh -s "$(which zsh)" "$USER"
+    fi
+fi
+
+echo "Setup concluído com sucesso!"
