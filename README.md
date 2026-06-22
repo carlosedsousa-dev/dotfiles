@@ -35,7 +35,7 @@ As configurações seguem a convenção de prefixos do Chezmoi:
 *   `dot_aliases.zsh` → `~/.aliases.zsh`
 *   `dot_bindkeys.zsh` → `~/.bindkeys.zsh`
 *   `dot_zsh_plugins.txt` → `~/.zsh_plugins.txt`
-*   `dot_config/symlink_mise` → `~/.config/mise/` (symlink via Chezmoi)
+*   `dot_config/mise/mise.toml` → `~/.config/mise/mise.toml`
 *   `run_once_install.sh` → executado uma vez na primeira aplicação
 
 ## ⚡ Produtividade (Aliases)
