@@ -2,4 +2,3 @@
 usage = "latest"
 uv = "latest"
 node = "24"
-chezmoi = "latest"
