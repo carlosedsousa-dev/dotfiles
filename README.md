@@ -12,11 +12,6 @@ Um ecossistema automatizado para provisionamento de ambientes Unix-like, focado 
 | **[Eza](https://github.com/eza-community/eza)** | Substituto moderno e colorido para o comando `ls`. |
 | **Zsh** | Shell principal com integração de plugins e aliases otimizados. |
 
-## 🌿 Estrutura de Branches
-
-*   **`core` (Desktop/Dev):** Setup completo. Inclui gerenciadores de runtime (Mise), plugins visuais e ferramentas de desenvolvimento.
-*   **`server` (Minimal/SSH):** Versão enxuta. Focada em performance e estabilidade para ambientes de servidor, contendo apenas o essencial para navegação e edição.
-
 ## ⚙️ Instalação Inteligente
 
 O `run_once_install.sh` (chezmoi) opera com detecção dinâmica de ambiente e gerenciamento de estado:
