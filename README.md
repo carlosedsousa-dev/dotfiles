@@ -27,7 +27,7 @@ chezmoi init --apply --branch niri carlosedsousa-dev
 ### 💻 No Desktop (Perfil Completo / Outros WMs — via Stow)
 
 ```bash
-git clone -b core [https://github.com/carlosedsousa-dev/dotfiles.git](https://github.com/carlosedsousa-dev/dotfiles.git) ~/dotfiles
+git clone -b core https://github.com/carlosedsousa-dev/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 ./install.sh
 
@@ -36,7 +36,7 @@ cd ~/dotfiles
 ### 🌐 No Servidor (Perfil Minimalista — via Stow)
 
 ```bash
-git clone -b server [https://github.com/carlosedsousa-dev/dotfiles.git](https://github.com/carlosedsousa-dev/dotfiles.git) ~/dotfiles
+git clone -b server https://github.com/carlosedsousa-dev/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 ./install.sh
 
