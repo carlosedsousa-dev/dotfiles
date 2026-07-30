@@ -1,6 +1,6 @@
 [tools]
 usage = "latest"
 uv = "latest"
-node = "latest"
+node = "24"
 bun = "latest"
 opencode = "latest"
