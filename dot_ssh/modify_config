@@ -1,0 +1,9 @@
+#!/bin/sh
+tmpfile=$(mktemp)
+trap 'rm -f "$tmpfile"' EXIT
+cat > "$tmpfile"
+if ! grep -q "^AddKeysToAgent yes" "$tmpfile"; then
+    { echo "AddKeysToAgent yes"; cat "$tmpfile"; }
+else
+    cat "$tmpfile"
+fi
