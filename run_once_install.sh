@@ -109,6 +109,15 @@ fi
 echo "Aplicando dotfiles via Chezmoi..."
 chezmoi apply
 
+# Configuração do GNOME Keyring SSH
+echo "Configurando GNOME Keyring SSH..."
+if command -v systemctl &>/dev/null; then
+    systemctl --user daemon-reload 2>/dev/null && echo "daemon-reload executado"
+    if systemctl --user is-enabled gnome-keyring-daemon.service &>/dev/null; then
+        systemctl --user start gnome-keyring-daemon.service 2>/dev/null && echo "gnome-keyring-daemon iniciado"
+    fi
+fi
+
 # Instalação de Ferramentas via Mise (conforme mise.toml)
 echo "Provisionando ferramentas globais via Mise..."
 if ! mise install -y; then
