@@ -31,7 +31,9 @@ As configurações seguem a convenção de prefixos do Chezmoi:
 *   `dot_bindkeys.zsh` → `~/.bindkeys.zsh`
 *   `dot_zsh_plugins.txt` → `~/.zsh_plugins.txt`
 *   `dot_config/mise/mise.toml` → `~/.config/mise/mise.toml`
+*   `dot_config/xdg-desktop-portal/niri-portals.conf` → `~/.config/xdg-desktop-portal/niri-portals.conf`
 *   `run_once_install.sh` → executado uma vez na primeira aplicação
+*   `run_onchange_after_restart-portal.sh.tmpl` → reinicia o portal de desktop quando o config do niri muda
 
 ## ⚡ Produtividade (Aliases)
 
@@ -40,3 +42,11 @@ Os aliases principais em `dot_aliases.zsh` incluem:
 *   `edot`: Edição rápida das configurações.
 *   `szsh`: Recarregamento instantâneo do contexto do shell.
 *   Workflow Git simplificado (status, commits, logs).
+
+## 🪟 Fix do Seletor de Arquivo em Wayland/niri
+
+Em sessões `niri`, o `xdg-desktop-portal` encaminha o `FileChooser` pro backend GNOME, que delega pro **Nautilus** (não instalado) → nenhum seletor abre. A correção:
+
+1. `~/.config/xdg-desktop-portal/niri-portals.conf` define `FileChooser=gtk` (backend GTK nativo), mantendo `default=gnome` para screencast/screenshot.
+2. `run_onchange_after_restart-portal.sh` reinicia o portal apenas quando o config muda (via checksum no template).
+3. `run_once_install.sh` instala `xdg-desktop-portal-gtk` (APT/DNF/Zypper) em máquinas novas.

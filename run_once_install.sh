@@ -22,16 +22,25 @@ PACKAGES=(
 # Pacotes específico do APT
 APT_SPECIFIC=(
     libssl-dev
+
+    # Backend GTK do portal (seletor de arquivo em Wayland/niri)
+    xdg-desktop-portal-gtk
 )
 
 # Pacotes específico do DNF
 DNF_SPECIFIC=(
     openssl-devel
+
+    # Backend GTK do portal (seletor de arquivo em Wayland/niri)
+    xdg-desktop-portal-gtk
 )
 
 # Pacotes específico do Zypper
 ZYPPER_SPECIFIC=(
     libopenssl-devel
+
+    # Backend GTK do portal (seletor de arquivo em Wayland/niri)
+    xdg-desktop-portal-gtk
 )
 
 # Chezmoi gerencia os dotfiles automaticamente com `chezmoi apply`
