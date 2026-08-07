@@ -4,3 +4,6 @@ uv = "latest"
 node = "24"
 bun = "latest"
 opencode = "latest"
+
+[settings]
+minimum_release_age = "0s"
