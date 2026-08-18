@@ -144,4 +144,14 @@ if [ "$(basename "$SHELL")" != "zsh" ]; then
     fi
 fi
 
+# Configuração de Variáveis Zypp no Sudo
+if [ "$PM" == "zypper" ]; then
+    echo "Configurando sudoers para variáveis Zypp..."
+    if [ ! -f /etc/sudoers.d/zypper-vars ]; then
+        echo 'Defaults env_keep += "ZYPP_PCK_PRELOAD ZYPP_SINGLE_RPMTRANS"' | sudo tee /etc/sudoers.d/zypper-vars > /dev/null
+        sudo chmod 440 /etc/sudoers.d/zypper-vars
+        sudo visudo -cf /etc/sudoers.d/zypper-vars
+    fi
+fi
+
 echo "Setup concluído com sucesso!"
