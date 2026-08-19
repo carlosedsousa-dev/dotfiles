@@ -147,10 +147,13 @@ fi
 # Configuração de Variáveis Zypp no Sudo
 if [ "$PM" == "zypper" ]; then
     echo "Configurando sudoers para variáveis Zypp..."
-    if [ ! -f /etc/sudoers.d/zypper-vars ]; then
-        echo 'Defaults env_keep += "ZYPP_PCK_PRELOAD ZYPP_SINGLE_RPMTRANS"' | sudo tee /etc/sudoers.d/zypper-vars > /dev/null
+    ZYPP_SUDOERS_LINE='Defaults env_keep += "ZYPP_PCK_PRELOAD ZYPP_SINGLE_RPMTRANS"'
+    if [ ! -f /etc/sudoers.d/zypper-vars ] || ! sudo grep -qxF "$ZYPP_SUDOERS_LINE" /etc/sudoers.d/zypper-vars 2>/dev/null; then
+        echo "$ZYPP_SUDOERS_LINE" | sudo tee /etc/sudoers.d/zypper-vars > /dev/null
         sudo chmod 440 /etc/sudoers.d/zypper-vars
         sudo visudo -cf /etc/sudoers.d/zypper-vars
+    else
+        echo "sudoers Zypp já configurado."
     fi
 fi
 
