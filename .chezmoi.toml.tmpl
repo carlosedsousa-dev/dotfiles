@@ -1,0 +1,14 @@
+{{- /* Segundos vivem apenas em ~/.config/chezmoi/chezmoi.toml (fora do git, chmod 600).
+       Pergunta uma vez no `chezmoi init`; depois edite com `chezmoi edit-config`. */ -}}
+{{- $openaiKey := promptStringOnce . "openaiKey" "OpenAI API key" -}}
+{{- $openaiUrl := promptStringOnce . "openaiUrl" "OpenAI base URL (vazio = https://api.openai.com/v1)" -}}
+{{- $anthropicKey := promptStringOnce . "anthropicKey" "Anthropic API key" -}}
+{{- $anthropicUrl := promptStringOnce . "anthropicUrl" "Anthropic base URL (vazio = https://api.anthropic.com)" -}}
+{{- $githubToken := promptStringOnce . "githubToken" "GitHub token" -}}
+
+[data]
+    openaiKey = {{ $openaiKey | quote }}
+    openaiUrl = {{ $openaiUrl | quote }}
+    anthropicKey = {{ $anthropicKey | quote }}
+    anthropicUrl = {{ $anthropicUrl | quote }}
+    githubToken = {{ $githubToken | quote }}

@@ -59,3 +59,6 @@ fi
 export PATH="$HOME/.cache/.bun/bin:$HOME/.opencode/bin:$HOME/.local/share/mise/bin:$HOME/.local/bin:$PATH"
 export ZYPP_PCK_PRELOAD=1
 export ZYPP_SINGLE_RPMTRANS=1
+
+# Secrets (gerado pelo chezmoi a partir de ~/.config/chezmoi/chezmoi.toml)
+[[ -f ~/.config/env/secrets.env ]] && source ~/.config/env/secrets.env
