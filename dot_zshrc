@@ -56,6 +56,7 @@ elif [[ -z "$SSH_AUTH_SOCK" ]] || [[ ! -S "$SSH_AUTH_SOCK" ]]; then
 fi
 
 # Exports
+export OPENAI_MODEL="qwen/qwen3.5-flash:free"
 export PATH="$HOME/.cache/.bun/bin:$HOME/.opencode/bin:$HOME/.local/share/mise/bin:$HOME/.local/bin:$PATH"
 export ZYPP_PCK_PRELOAD=1
 export ZYPP_SINGLE_RPMTRANS=1
