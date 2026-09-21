@@ -1,5 +1,5 @@
 #!/bin/sh
 # checksum: {{ sha256sum (include "dot_config/xdg-desktop-portal/niri-portals.conf") }}
-# Reinicia o portal de desktop quando o config do niri muda,
-# para o seletor de arquivo (FileChooser) apontar pro backend GTK.
-systemctl --user try-restart xdg-desktop-portal.service || true
+# Reinicia todos os portals de desktop quando o config muda,
+# garantindo que FileChooser, ScreenCast, Screenshot e Settings funcionem.
+systemctl --user try-restart xdg-desktop-portal.service xdg-desktop-portal-gnome.service xdg-desktop-portal-gtk.service || true
