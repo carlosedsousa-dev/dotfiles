@@ -19,11 +19,7 @@ source $_antidote_static
 autoload -Uz compinit
 compinit_lazy() {
     unfunction compinit_lazy
-    if [[ -n ${ZDOTDIR:-$HOME}/.zcompdump(#qN.m-1) ]]; then
-        compinit -C
-    else
-        compinit
-    fi
+    compinit
     zle expand-or-complete
 }
 zle -N expand-or-complete compinit_lazy
