@@ -32,8 +32,24 @@ As configurações seguem a convenção de prefixos do Chezmoi:
 *   `dot_zsh_plugins.txt` → `~/.zsh_plugins.txt`
 *   `dot_config/mise/mise.toml` → `~/.config/mise/mise.toml`
 *   `dot_config/xdg-desktop-portal/niri-portals.conf` → `~/.config/xdg-desktop-portal/niri-portals.conf`
+*   `dot_config/environment.d/90-wayland.conf` → `~/.config/environment.d/90-wayland.conf`
+*   `dot_config/env/private_secrets.env.tmpl` → `~/.config/env/secrets.env` (gerado)
+*   `dot_config/systemd/user/gnome-keyring-daemon.service.d/override.conf` → override do GNOME Keyring
+*   `dot_ssh/modify_config` → aplicado como modify do `~/.ssh/config`
 *   `run_once_install.sh` → executado uma vez na primeira aplicação
 *   `run_onchange_after_restart-portal.sh.tmpl` → reinicia o portal de desktop quando o config do niri muda
+
+## 🔐 Segredos e Variáveis de Ambiente
+
+Os segredos vivem apenas em `~/.config/chezmoi/chezmoi.toml` (fora do git, modo 600). Na primeira execução de `chezmoi init`, o `.chezmoi.toml.tmpl` pergunta pelas chaves; depois `chezmoi edit-config` para alterar valores e `chezmoi apply` para regenerar `~/.config/env/secrets.env`, que é carregado automaticamente pelo `.zshrc`.
+
+Variáveis de sessão (Wayland/Qt/GTK/SDL etc.) ficam em `~/.config/environment.d/90-wayland.conf`, lidas pelo `systemd --user`.
+
+## 🧰 Scripts Executados pelo Chezmoi
+
+- `run_once_install.sh`: detecta o gerenciador de pacotes, instala pacotes base, Mise, Antidote, aplica os dotfiles e provisiona ferramentas.
+- `run_once_system-setup.sh`: overrides Flatpak globais, `xdg-terminal-exec` (kitty) e seleção de terminal do Cinnamon.
+- `run_onchange_after_restart-portal.sh.tmpl`: reinicia os portais de desktop quando `niri-portals.conf` muda (checksum na ordem de execução).
 
 ## ⚡ Produtividade (Aliases)
 
