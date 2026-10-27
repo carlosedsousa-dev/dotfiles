@@ -1,0 +1,4 @@
+# Documentacao do repositorio: nao deve ser aplicada no HOME.
+# "docs/" ignora a pasta em si; "docs/**" ignora o conteudo.
+docs/
+docs/**
