@@ -1,215 +1,114 @@
-# Tailscale + Cloudflare WARP: diagnóstico e correção
+# Tailscale + Cloudflare WARP: diagnóstico e configuração
 
-> Registro do problema em que o `tailscaled` ficava permanentemente em
-> `Needs login` (sem gerar URL de autenticação) por conflito de roteamento com
-> o cliente Cloudflare WARP (Zero Trust) em modo túnel total.
+> Registro da convivência entre o Tailscale e o cliente Cloudflare WARP
+> (Zero Trust) no host `opensuse-maker-pc2`.
 
-- **Data:** 19/10/2026
+- **Atualizado:** 27/10/2026
 - **Host:** `opensuse-maker-pc2` (openSUSE, NetworkManager)
-- **Tailscale:** 1.104.1 (`tailscaled` ativo, estado `Needs login`)
-- **Cloudflare WARP:** conectado, política de rede `WarpWithDnsOverHttps`,
-  `Always On: true`, modo **exclude** (túnel total)
-- **Saída física:** `br0` (`10.113.90.100/24`, rede do IFTO)
+- **Interface física:** `br0` (`10.113.90.100/24`, rede do IFTO)
+- **Interface Tailscale:** `tailscale0` (`100.112.103.80`)
+- **Interface WARP:** `CloudflareWARP` (`100.96.0.1`)
+- **Tailscale:** 1.104.1
+- **Cloudflare WARP:** `WarpWithDnsOverHttps`, Always On, split tunnel em
+  **Exclude mode**
 
 ---
 
-## 1. Sintoma
+## 1. Resumo da solução atual
+
+A configuração está dividida em três partes:
+
+1. O tráfego marcado pelo `tailscaled` (`fwmark 0x80000`) é encaminhado para
+   a tabela do WARP antes das regras padrão do Tailscale.
+2. O WARP encaminha o domínio do tailnet para o MagicDNS local do Tailscale.
+3. O WARP encaminha o domínio interno do IFTO para os DNS internos da rede.
+
+No Cloudflare Zero Trust, o perfil do dispositivo contém estes Local Domain
+Fallbacks:
 
 ```text
-$ systemctl status tailscaled
-Active: active (running)
+tail49460f.ts.net -> 100.100.100.100
+ifto.local        -> 10.11.0.64, 10.13.0.1
+```
+
+Os demais domínios públicos continuam sendo resolvidos pelo Cloudflare
+Gateway/DoH.
+
+---
+
+## 2. Problema original
+
+Com o WARP conectado em modo de túnel total, o `tailscaled` ficava sem
+conseguir completar o login ou atualizar o mapa da rede. Os sintomas eram:
+
+```text
 Status: "Needs login: "
-
-$ tailscale status
-Logged out.
+tailscale status: Logged out.
+tailscale up: context canceled
 ```
 
-O comando `tailscale up` ficava pendurado por dezenas de segundos e **não
-imprimia a URL de autenticação**:
+Em outro momento, já autenticado, o problema aparecia como:
 
 ```text
-$ sudo tailscale up
-context canceled        # somente ao ser interrompido
+Tailscale hasn't received a network map from the coordination server
 ```
 
-O log do `tailscaled` mostrava a tentativa de buscar a chave de controle:
+Também havia falha na resolução de nomes do tailnet:
 
 ```text
-control: doLogin(regen=true, hasUrl=false)
-health(warnable=login-state): error: You are logged out. The last login error
-  was: fetch control key: Get "https://controlplane.tailscale.com/key?v=148":
-  context canceled
+ping opensuse-maker-pc2
+Falha temporário na resolução de nome
 ```
 
 ---
 
-## 2. Diagnóstico
+## 3. Diagnóstico de roteamento
 
-### 2.1 O Tailscale não alcança o control plane
+### 3.1 Regras relevantes
 
-Com o `tailscale up` rodando, os sockets do `tailscaled` ficavam parados em
-`SYN-SENT`:
-
-```text
-$ sudo ss -tanp | grep tailscaled
-SYN-SENT  10.113.90.100:59830  176.58.92.254:443   users:(("tailscaled",...))
-SYN-SENT  10.113.90.100:37254  192.200.0.106:443   users:(("tailscaled",...))
-SYN-SENT  10.113.90.100:39092  192.200.0.111:443   users:(("tailscaled",...))
-...
-```
-
-Ou seja: os pacotes saíam, mas **nenhuma resposta voltava**.
-
-O `netcheck` confirmava o isolamento:
+O Tailscale marca o tráfego originado pelo daemon com `0x80000`. O WARP
+instala uma regra que envia tráfego não marcado para a tabela `65743`:
 
 ```text
-$ sudo tailscale netcheck
-	* UDP: false
-	* IPv4: (no addr found)
-	* IPv6: no, but OS has support
-	* Nearest DERP: unknown (no response to latency probes)
+5204: not from all fwmark 0x100cf lookup 65743
+5205: from all fwmark 0x80000/0xff0000 lookup 65743
+5210: from all fwmark 0x80000/0xff0000 lookup main
+5230: from all fwmark 0x80000/0xff0000 lookup default
+5250: from all fwmark 0x80000/0xff0000 unreachable
+5270: from all lookup 52
 ```
 
-### 2.2 Quem manda no roteamento é o WARP
+A regra `5205` é necessária porque tem prioridade maior que as regras padrão
+do Tailscale (`5210`, `5230` e `5250`). Assim, o tráfego marcado do
+`tailscaled` usa a interface `CloudflareWARP`, em vez de escapar para `br0`,
+onde o firewall do WARP pode descartar as respostas.
+
+### 3.2 Dispatcher do NetworkManager
+
+O arquivo instalado é:
 
 ```text
-$ ip rule
-0:      from all lookup local
-5210:   from all fwmark 0x80000/0xff0000 lookup main
-5230:   from all fwmark 0x80000/0xff0000 lookup default
-5250:   from all fwmark 0x80000/0xff0000 unreachable
-5270:   from all lookup 52
-32765:  not from all fwmark 0x100cf lookup 65743
-32766:  from all lookup main
-32767:  from all lookup default
+/etc/NetworkManager/dispatcher.d/90-tailscale-warp-route
 ```
 
-- As regras `5210/5230/5250/5270` são instaladas pelo **próprio Tailscale** e
-  valem para o `fwmark 0x80000` (constante `LinuxBypassMark` no código do
-  Tailscale: “packet originated by tailscaled itself, and must not be routed
-  over the Tailscale network”).
-- A regra `32765` e a tabela `65743` são do **Cloudflare WARP**: todo tráfego
-  sem marca vai para a interface `CloudflareWARP`.
-
-Resultado da consulta de rota:
-
-```text
-$ ip route get 192.200.0.113
-192.200.0.113 dev CloudflareWARP table 65743 src 100.96.0.1
-
-$ ip route get 192.200.0.113 mark 0x80000
-192.200.0.113 via 10.113.90.1 dev br0 src 10.113.90.100
-```
-
-O tráfego **marcado pelo Tailscale escapa do túnel do WARP** e sai pela
-interface física `br0`.
-
-### 2.3 O firewall do WARP descarta as respostas na interface física
-
-O WARP instala uma tabela nftables com `policy drop` na entrada:
-
-```text
-table inet cloudflare-warp {
-	chain input {
-		type filter hook input priority filter; policy drop;
-		iif "lo" accept
-		iif "CloudflareWARP" accept
-		...
-		ip saddr 10.0.0.0/8 accept
-		ip saddr 100.64.0.0/10 accept
-		ip saddr 172.16.0.0/12 accept
-		ip saddr 192.168.0.0/16 accept
-		...
-	}
-	chain output {
-		type filter hook output priority filter; policy drop;
-		oif "lo" accept
-		oif "CloudflareWARP" goto tun
-		...
-	}
-	chain tun {
-		ip saddr 100.96.0.1 accept
-		...
-		ip protocol tcp reject with tcp reset
-		reject
-	}
-}
-```
-
-Consequências:
-
-1. Respostas TCP vindas de IP público pela `br0` não casam com nenhum `accept`
-   da chain `input` → **DROP**.
-2. Se um socket tentar sair pela `CloudflareWARP` com source address diferente
-   de `100.96.0.1`, a chain `tun` rejeita com RST.
-
-### 2.4 Prova experimental
-
-Teste com um socket Python controlando o `SO_MARK`:
-
-```text
-mark=0x80000 (marca do Tailscale) -> FALHOU em 8007ms: timed out
-mark=0x0     (tráfego comum)      -> Conectado em 203ms  local=('100.96.0.1', 55402)
-```
-
-E, com uma regra temporária desviando o tráfego marcado para a tabela do WARP:
-
-```text
-$ sudo ip rule add fwmark 0x80000/0xff0000 lookup 65743 priority 5205
-$ ip route get 192.200.0.113 mark 0x80000
-192.200.0.113 dev CloudflareWARP table 65743 src 100.96.0.1 mark 0x80000
-
-mark=0x80000 -> Conectado em 205ms  local=('100.96.0.1', 55412)
-```
-
-Com essa regra, o `tailscale up` finalmente imprimiu a URL de login.
-
----
-
-## 3. Causa raiz
-
-```text
-tailscaled (fwmark 0x80000)
-        │
-        ├─ ip rule 5210/5230/5250 → tabela main → br0 (uplink físico)
-        │        └─ firewall do WARP (input policy drop) descarta as respostas
-        │
-        └─ ✗ nunca chega ao controlplane.tailscale.com
-```
-
-O Tailscale marca o próprio tráfego para evitar loop de roteamento, mas essa
-marca também o tira do túnel do WARP. Como o WARP está em modo túnel total e
-descarta respostas que chegam pela interface física, o `tailscaled` nunca
-completa o handshake de controle — logo, nunca há URL de login.
-
----
-
-## 4. Correção
-
-A correção tem duas partes independentes: **rota** (para o Tailscale
-funcionar) e **DNS** (para os dois resolvers conviverem).
-
-### 4.1 Rota: manter o tráfego marcado dentro do WARP
-
-Criar `/etc/NetworkManager/dispatcher.d/90-tailscale-warp-route` (root, `755`):
+Conteúdo:
 
 ```sh
 #!/bin/sh
-# Mantem o trafego marcado do tailscaled (fwmark 0x80000) dentro do tunel do
-# Cloudflare WARP. Sem isso, o tailscaled sai pela interface fisica (br0), onde
-# o firewall do WARP (nftables, chain input policy drop) descarta as respostas
-# e o login/controle do Tailscale nunca completa.
 
+# Mantém o tráfego marcado do tailscaled dentro do túnel do Cloudflare WARP.
 IP=/usr/bin/ip
 [ -x "$IP" ] || exit 0
 
 case "$2" in
-	up|dhcp4-change|dhcp6-change|reapply|connectivity-change) ;;
-	*) exit 0 ;;
+    up|dhcp4-change|dhcp6-change|reapply|connectivity-change) ;;
+    *) exit 0 ;;
 esac
 
-# Descobre a tabela de roteamento usada pelo WARP (normalmente 65743).
-TABLE=$("$IP" rule show | sed -n 's/.*not from all fwmark 0x100cf lookup \([0-9][0-9]*\).*/\1/p' | head -n1)
+# Descobre a tabela usada pelo WARP; 65743 é o valor usual.
+TABLE=$("$IP" rule show |
+    sed -n 's/.*not from all fwmark 0x100cf lookup \([0-9][0-9]*\).*/\1/p' |
+    head -n1)
 [ -n "$TABLE" ] || TABLE=65743
 
 "$IP" rule del fwmark 0x80000/0xff0000 lookup "$TABLE" priority 5205 2>/dev/null
@@ -218,97 +117,278 @@ TABLE=$("$IP" rule show | sed -n 's/.*not from all fwmark 0x100cf lookup \([0-9]
 exit 0
 ```
 
-Instalar e aplicar sem esperar o próximo evento de rede:
+Aplicar manualmente após instalar ou depois de uma alteração de rede:
 
 ```sh
-sudo install -o root -g root -m 755 \
-    /caminho/para/90-tailscale-warp-route \
-    /etc/NetworkManager/dispatcher.d/90-tailscale-warp-route
-
-sudo /etc/NetworkManager/dispatcher.d/90-tailscale-warp-route CloudflareWARP up
+sudo /etc/NetworkManager/dispatcher.d/90-tailscale-warp-route \
+    CloudflareWARP up
 ```
 
-A regra fica antes das regras do Tailscale (`5205 < 5210`) e é recriada a cada
-evento de rede, inclusive quando o WARP reconecta. Se o WARP estiver
-desconectado, a tabela não existe e a consulta simplesmente segue para a
-tabela `main` (comportamento original).
+Validar:
 
-### 4.2 DNS: MagicDNS + WARP como upstream
+```sh
+ip rule show | grep 5205
+ip route get 192.200.0.113 mark 0x80000
+```
+
+O segundo comando deve apontar para `CloudflareWARP` e para a tabela `65743`.
+
+---
+
+## 4. DNS: Local Domain Fallback no WARP
+
+### 4.1 Por que o DNS falhava
+
+Quando o WARP era o dono do `/etc/resolv.conf`, o arquivo continha:
+
+```text
+nameserver 127.0.2.2
+nameserver 127.0.2.3
+search tail49460f.ts.net ifto.local
+```
+
+O proxy DNS do WARP não conhecia o tailnet e devolvia `NXDOMAIN` para:
+
+```text
+opensuse-maker-pc2.tail49460f.ts.net
+```
+
+O MagicDNS local, por outro lado, respondia corretamente:
+
+```text
+dig @100.100.100.100 opensuse-maker-pc2.tail49460f.ts.net
+100.112.103.80
+```
+
+Além disso, o domínio `ifto.local` aparecia no search domain, mas não era
+resolvido pelo upstream do WARP. Consultas que falhavam podiam levar dezenas
+de segundos, atrasando inclusive o long-poll do `tailscaled`.
+
+### 4.2 Configuração no painel Cloudflare
+
+No Cloudflare Zero Trust:
+
+```text
+Zero Trust
+  > Team & Resources
+  > Devices
+  > Device profiles
+  > General profiles
+  > Configure
+  > Local Domain Fallback
+  > Manage
+```
+
+Foram adicionadas estas entradas:
+
+| Domínio | DNS Servers | Descrição |
+|---|---|---|
+| `tail49460f.ts.net` | `100.100.100.100` | MagicDNS Tailscale |
+| `ifto.local` | `10.11.0.64`, `10.13.0.1` | DNS interno IFTO |
+
+O domínio informado deve ser o sufixo, sem `*.`. O cliente aplica a regra a
+nomes abaixo desse sufixo.
+
+O fallback de `ifto.local` é alcançável porque `10.0.0.0/8` está excluído do
+túnel WARP. Os DNS internos foram testados diretamente:
+
+```text
+dig @10.13.0.1 ifto.local
+status: NOERROR
+Query time: aproximadamente 1–8 ms
+```
+
+### 4.3 Resultado confirmado
+
+A política recebida pelo cliente ficou:
+
+```text
+{'suffix': 'tail49460f.ts.net',
+ 'description': 'MagicDNS Tailscale',
+ 'dns_server': ['100.100.100.100']}
+
+{'suffix': 'ifto.local',
+ 'description': 'DNS interno IFTO',
+ 'dns_server': ['10.11.0.64', '10.13.0.1']}
+```
+
+O WARP passou a resolver o domínio interno sem o timeout anterior:
+
+```text
+dig @127.0.2.2 ifto.local
+status: NOERROR
+Query time: aproximadamente 58 ms
+```
+
+Um host inexistente passou a retornar rapidamente `NXDOMAIN`, em vez de
+causar uma espera de dezenas de segundos:
+
+```text
+getent hosts nome-inexistente-xyz-abc
+tempo total: aproximadamente 0,1 s
+```
+
+`NXDOMAIN` para um host que realmente não existe é o resultado esperado; o
+importante é a resposta rápida.
+
+### 4.4 Verificação de nomes do tailnet
+
+```sh
+dig @127.0.2.2 opensuse-maker-pc2.tail49460f.ts.net
+getent hosts opensuse-maker-pc2
+getent hosts opensuse-x543mar
+getent hosts pc-lab2
+getent hosts poco-x6-pro-5g
+```
+
+O WARP encaminha `*.tail49460f.ts.net` ao `100.100.100.100`, e os nomes do
+tailnet são resolvidos pelo MagicDNS.
+
+---
+
+## 5. Validação do novo dispositivo
+
+O dispositivo conectado durante o diagnóstico foi:
+
+```text
+poco-x6-pro-5g
+100.98.179.86
+```
+
+Validação:
+
+```text
+tailscale ping poco-x6-pro-5g
+pong from poco-x6-pro-5g (100.98.179.86)
+
+ping 100.98.179.86
+3 pacotes enviados, 3 recebidos, 0% de perda
+```
+
+O primeiro teste usou o endereço local `10.113.90.106:50584`, indicando uma
+conexão direta pela rede local naquele momento.
+
+---
+
+## 6. Estado atual do UDP e DERP
+
+O DNS e o control plane estão funcionando, mas o `netcheck` ainda informa:
+
+```text
+UDP: false
+IPv4: no addr found
+Nearest DERP: unknown
+```
+
+O DERP por TCP conecta normalmente:
+
+```text
+derp-11 connected; connGen=1
+```
+
+Os testes mostraram que alguns servidores STUN funcionam:
+
+```text
+stun.cloudflare.com:3478 -> funciona
+stun.l.google.com:3478   -> funciona
+```
+
+Mas os STUNs do Tailscale/DERP testados não responderam quando roteados pela
+tabela do WARP:
+
+```text
+derp11.tailscale.com:3478 -> timeout
+```
+
+Portanto, `UDP: false` é um problema separado do DNS. O funcionamento atual
+é:
+
+- DNS MagicDNS: funcionando;
+- control plane: funcionando após recuperação do `tailscaled`;
+- DERP por TCP: funcionando;
+- alguns peers locais: podem conectar diretamente;
+- descoberta de endpoint UDP público: ainda não confirmada;
+- peers remotos: podem usar DERP e apresentar maior latência.
+
+Não adicionar rotas permanentes para IPs individuais do DERP sem nova
+validação: o WARP também instala um firewall que pode descartar respostas que
+entrem pela interface física `br0`.
+
+---
+
+## 7. Alerta `dns-fight`
+
+O Tailscale pode continuar exibindo:
+
+```text
+System DNS config not ideal.
+/etc/resolv.conf overwritten.
+```
+
+Esse alerta indica que o `/etc/resolv.conf` é gerenciado diretamente por um
+arquivo, e não por um gerenciador reconhecido pelo Tailscale, como
+`systemd-resolved`. Ele não significa que o DNS esteja falhando.
+
+O estado funcional atual é:
+
+```text
+nameserver 100.100.100.100
+nameserver fd7a:115c:a1e0::53
+search tail49460f.ts.net ifto.local
+```
+
+Se o WARP voltar a tomar posse do arquivo, reaplicar o Tailscale pode restaurar
+o estado:
 
 ```sh
 sudo tailscale set --accept-dns=true
+sudo systemctl restart tailscaled
 ```
 
-Com isso, depois do login:
+Depois, validar:
 
-```text
-aplicações → 100.100.100.100 (MagicDNS do Tailscale)
-                ├── nomes do tailnet (*.ts.net) → resolvidos localmente
-                └── demais nomes → 127.0.2.2 / 127.0.2.3 (WARP DoH)
+```sh
+getent hosts poco-x6-pro-5g
 ```
-
-Por que não há conflito:
-
-- `100.100.100.100` pertence a `100.64.0.0/10`, faixa **não capturada** pela
-  tabela do WARP (que cobre `100.0.0.0/10` e `100.128.0.0/9`) → a consulta cai
-  na tabela `main` e vai para `tailscale0`.
-- O Tailscale guarda os resolvers originais do sistema (os stubs do WARP) como
-  upstream, então a filtragem do Cloudflare Gateway continua valendo.
-- Enquanto não há login, o Tailscale não altera o `/etc/resolv.conf`.
 
 ---
 
-## 5. Validação
+## 8. Checklist de diagnóstico
 
 ```sh
-# 1. A regra existe e aponta para a tabela do WARP
-ip rule | grep 5205
+# Estado geral
+tailscale status
+sudo tailscale netcheck
+
+# Rota do tráfego marcado pelo tailscaled
+ip rule show | grep 5205
 ip route get 192.200.0.113 mark 0x80000
 
-# 2. O control plane responde
-sudo tailscale netcheck          # UDP/IPv4/DERP devem aparecer
-sudo tailscale status            # deve sair de "Logged out"
+# DNS do tailnet via WARP
+dig @127.0.2.2 opensuse-maker-pc2.tail49460f.ts.net
 
-# 3. DNS dos dois mundos
-getent hosts www.google.com      # resolve via WARP
-getent hosts <host>.<tailnet>.ts.net   # resolve via MagicDNS
+# DNS interno via WARP
+dig @127.0.2.2 ifto.local
 
-# 4. Resolv.conf após login
-cat /etc/resolv.conf             # nameserver 100.100.100.100 + search do WARP
+# Resolução pela configuração do sistema
+getent hosts opensuse-maker-pc2
+getent hosts poco-x6-pro-5g
+
+# Arquivo atualmente usado pelo sistema
+grep -vE '^#|^$' /etc/resolv.conf
 ```
 
 ---
 
-## 6. Manutenção e limitações
+## 9. Alternativa
 
-- **WARP reescrevendo o `resolv.conf`:** se o WARP sobrescrever o arquivo
-  (ele o gerencia), o MagicDNS sai até reaplicar:
-
-  ```sh
-  sudo tailscale set --accept-dns=true
-  ```
-
-  Ou reiniciar o serviço: `sudo systemctl restart tailscaled`.
-- **Tabela do WARP:** a regra descobre o número dinamicamente; se o WARP mudar
-  a estratégia de tabelas, o dispatcher se adapta na próxima execução.
-- **Rede sem NetworkManager:** o dispatcher não é executado. Nesse caso, a
-  regra precisa ser adicionada por outro mecanismo (systemd unit, networkd
-  dispatcher etc.).
-- **IPv6:** o mesmo raciocínio vale para `ip -6 rule` se o WARP estiver
-  capturando IPv6. Nesta máquina o problema observado foi IPv4; o dispatcher
-  cobre apenas IPv4.
-
----
-
-## 7. Alternativa
-
-Se o WARP **não** for obrigatório, a solução mais simples é desconectá-lo
-enquanto o Tailscale é usado:
+Se o WARP não for obrigatório, desconectá-lo elimina a disputa de roteamento:
 
 ```sh
-warp-cli disconnect
+sudo warp-cli disconnect
 ```
 
-Como o cliente está sob política gerenciada (`Always On: true`), ele pode
-reconectar sozinho — por isso a correção de rota acima é o caminho estável para
-manter os dois ativos.
+Como a política atual usa `Always On: true`, o cliente pode reconectar
+automaticamente. Para manter WARP e Tailscale juntos, a combinação do
+dispatcher de rota com os dois Local Domain Fallbacks é a configuração
+recomendada neste host.
